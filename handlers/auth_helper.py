@@ -66,11 +66,11 @@ def loginPayloadMalformed(reqLogin: ReqLogin, dbUser: UserORM, dbDetailedUser: G
             return None
 
 
-def authenticateUser(db: Session, reqLogin: ReqLogin):
-    dbUser = getUserByUUID(db, reqLogin.uuid)
+async def authenticateUser(db: Session, reqLogin: ReqLogin):
+    dbUser = await getUserByUUID(db, reqLogin.uuid)
     if not dbUser:
         return None, None
-    dbDetailedUser = getDetailedUser(db, dbUser.method, dbUser.id)
+    dbDetailedUser = await getDetailedUser(db, dbUser.method, dbUser.id)
     if not dbDetailedUser:
         return None, None
     if loginPayloadMalformed(reqLogin, dbUser, dbDetailedUser):
@@ -78,19 +78,18 @@ def authenticateUser(db: Session, reqLogin: ReqLogin):
     return dbUser, dbDetailedUser
 
 
-def authenticateUserByTokenData(db: Session, tokenData: TokenData):
-    dbUser = getUserByUUID(db, tokenData.uuid)
+async def authenticateUserByTokenData(db: Session, tokenData: TokenData):
+    dbUser = await getUserByUUID(db, tokenData.uuid)
     if not dbUser:
         return None
-    dbDetailedUser = getDetailedUser(db, tokenData.method, dbUser.id)
+    dbDetailedUser = await getDetailedUser(db, tokenData.method, dbUser.id)
     if not dbDetailedUser:
         return None
     return dbUser, dbDetailedUser
 
 
-def setupNewUser(db: Session, user: User) -> tuple[UserORM, GoogleUserORM]:
-    dbUser, dbDetailedUser = createUser(db, user)
-
+async def setupNewUser(db: Session, user: User) -> tuple[UserORM, GoogleUserORM]:
+    dbUser, dbDetailedUser = await createUser(db, user)
     setting = formatDefaultSetting(dbUser.id)
-    createSetting(db, setting)
+    await createSetting(db, setting)
     return dbUser, dbDetailedUser

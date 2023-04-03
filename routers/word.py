@@ -13,6 +13,6 @@ router = APIRouter(prefix="/manage-words")
 
 
 @router.get("/", tags=[RouterGroupType.WORD])
-def getCollectedWords(tokenData: Annotated[TokenData, Depends(getTokenData)], db: Session = Depends(get_db)):
-    getUserCollectedWords(tokenData, db)
+async def getCollectedWords(tokenData: Annotated[TokenData, Depends(getTokenData)], db: Session = Depends(get_db)):
+    await getUserCollectedWords(tokenData, db)
     return {"num_of_words": 0}

@@ -13,13 +13,16 @@ from utils.enum import RouterGroupType
 router = APIRouter(prefix="/users")
 
 
+tokenDataDep = Annotated[TokenData, Depends(getTokenData)]
+
+
 @router.get("/me", tags=[RouterGroupType.USER])
-def me(tokenData: Annotated[TokenData, Depends(getTokenData)], db: Session = Depends(get_db)):
-    resp = getUserByTokenData(tokenData, db)
+async def me(tokenData: tokenDataDep, db: Session = Depends(get_db)):
+    resp = await getUserByTokenData(tokenData, db)
     return resp
 
 
 @router.get("/setting", tags=[RouterGroupType.USER], response_model=Setting)
-def getSettings(tokenData: Annotated[TokenData, Depends(getTokenData)], db: Session = Depends(get_db)):
-    resp = getUserSettings(tokenData, db)
+async def getSettings(tokenData: tokenDataDep, db: Session = Depends(get_db)):
+    resp = await getUserSettings(tokenData, db)
     return resp

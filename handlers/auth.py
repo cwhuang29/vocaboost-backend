@@ -24,7 +24,7 @@ def getTokenData(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData:
     return decodeAccessToken(token)
 
 
-def handleGoogleLogin(reqLogin: ReqLogin, db: Session) -> TokenData:
+async def handleGoogleLogin(reqLogin: ReqLogin, db: Session) -> TokenData:
     try:
         user = formatGoogleUserFromReq(reqLogin)
     except Exception as err:
@@ -32,11 +32,11 @@ def handleGoogleLogin(reqLogin: ReqLogin, db: Session) -> TokenData:
         raise HTTPException(status_code=400, detail=str(err))
 
     try:
-        dbUser, dbDetailedUser = authenticateUser(db, reqLogin)
+        dbUser, dbDetailedUser = await authenticateUser(db, reqLogin)
         if not dbUser:
-            dbUser, dbDetailedUser = setupNewUser(db, user)
+            dbUser, dbDetailedUser = await setupNewUser(db, user)
 
-        createLoginRecord(db, dbUser.id)
+        await createLoginRecord(db, dbUser.id)
         tokenData = TokenData(uuid=dbUser.uuid, method=dbUser.method, email=dbDetailedUser.email)  # pyright: ignore[reportOptionalMemberAccess]
     except IntegrityError as err:  # e.g., email is not unique
         raise HTTPException(status_code=400, detail=err._message())
@@ -46,17 +46,17 @@ def handleGoogleLogin(reqLogin: ReqLogin, db: Session) -> TokenData:
     return tokenData
 
 
-def handleLogin(reqLogin: ReqLogin, db: Session) -> Token:
+async def handleLogin(reqLogin: ReqLogin, db: Session) -> Token:
     token = None
     if reqLogin.loginMethod == LoginMethodType.GOOGLE:
-        tokenData = handleGoogleLogin(reqLogin, db)
+        tokenData = await handleGoogleLogin(reqLogin, db)
     else:
         raise HTTPException(status_code=400, detail=HTTP_ERROR_MSG.LOGIN_NOT_SUPPORT)
     token = createAccessToken(tokenData)
     return token
 
 
-def handleLogout(tokenData: TokenData, db: Session):
-    dbUser = getUserByUUID(db, tokenData.uuid)
+async def handleLogout(tokenData: TokenData, db: Session):
+    dbUser = await getUserByUUID(db, tokenData.uuid)
     if dbUser:
-        createLogoutRecord(db, dbUser.id)
+        await createLogoutRecord(db, dbUser.id)  # Without await, the db query will not be executed even if server responds success

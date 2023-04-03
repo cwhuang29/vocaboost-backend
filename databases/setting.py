@@ -5,11 +5,11 @@ from structs.models.setting import SettingORM
 from structs.schemas.setting import Setting
 
 
-def getSettingsByUser(db: Session, id: int):
+async def getSettingsByUser(db: Session, id: int):
     return db.query(SettingORM).filter(SettingORM.user_id == id).first()
 
 
-def createSetting(db: Session, setting: Setting) -> SettingORM:
+async def createSetting(db: Session, setting: Setting) -> SettingORM:
     dbSetting = getSettingORM(setting)
     db.add(dbSetting)
     db.commit()

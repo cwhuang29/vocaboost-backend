@@ -12,12 +12,12 @@ router = APIRouter()
 
 
 @router.post("/login", tags=[RouterGroupType.AUTH], response_model=Token)
-def login(req_login: ReqLogin, db: Session = Depends(get_db)):
-    resp = handleLogin(req_login, db)
+async def login(req_login: ReqLogin, db: Session = Depends(get_db)):
+    resp = await handleLogin(req_login, db)
     return resp
 
 
 @router.post("/logout", tags=[RouterGroupType.AUTH])
-def logout(tokenData: Annotated[TokenData, Depends(getTokenData)], db: Session = Depends(get_db)):
-    handleLogout(tokenData, db)
+async def logout(tokenData: Annotated[TokenData, Depends(getTokenData)], db: Session = Depends(get_db)):
+    await handleLogout(tokenData, db)
     return {"result": "success"}
