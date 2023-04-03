@@ -21,6 +21,6 @@ class GoogleUserORM(Base):
 
     user_id = Column(Integer, primary_key=True, index=True)
     scopes = Column(String)
-    serverAuthCode = Column(String)
+    server_auth_code = Column(String)
     email = Column(String)
     avatar = Column(String)

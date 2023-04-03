@@ -9,7 +9,7 @@ def getGoogleUserORM(user: GoogleUser, id: int) -> GoogleUserORM:
         user_id=id,
         email=user.email,
         scopes=user.scopes,
-        serverAuthCode=user.serverAuthCode,
+        server_auth_code=user.serverAuthCode,
         avatar=user.avatar,
     )
 
@@ -31,7 +31,7 @@ def getUserORM(user: User) -> UserORM:
     )
 
 
-def getAuthStatusORM(id: int, authType: AuthHistoryType):
+def getAuthHistoryORM(id: int, authType: AuthHistoryType):
     return AuthHistoryORM(
         user_id=id,
         action=authType.value

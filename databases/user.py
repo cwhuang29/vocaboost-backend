@@ -11,14 +11,18 @@ async def getUser(db: Session, id: int):
     return db.query(UserORM).filter(UserORM.id == id).first()
 
 
+async def getUserByUUID(db: Session, uuid: UUID4):
+    return db.query(UserORM).filter(UserORM.uuid == str(uuid)).first()
+
+
 async def getDetailedUser(db: Session, login_method: int, user_id: int):
     if login_method == LoginMethodType.GOOGLE.value:
         return db.query(GoogleUserORM).filter(GoogleUserORM.user_id == user_id).first()
     return None
 
 
-async def getUserByUUID(db: Session, uuid: UUID4):
-    return db.query(UserORM).filter(UserORM.uuid == str(uuid)).first()
+async def getGoogleUser(db: Session, email: str):
+    return db.query(GoogleUserORM).filter(GoogleUserORM.email == email).first()
 
 
 async def getUsers(db: Session, skip: int = 0, limit: int = 100):

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from databases.setup import get_db
 from handlers.auth import getTokenData
-from handlers.user import getUserSettings, getUserByTokenData
+from handlers.user import getUserSettings, getDisplayUserByTokenData
 from structs.schemas.auth import TokenData
 from structs.schemas.setting import Setting
 from utils.enum import RouterGroupType
@@ -18,7 +18,7 @@ tokenDataDep = Annotated[TokenData, Depends(getTokenData)]
 
 @router.get("/me", tags=[RouterGroupType.USER])
 async def me(tokenData: tokenDataDep, db: Session = Depends(get_db)):
-    resp = await getUserByTokenData(tokenData, db)
+    resp = await getDisplayUserByTokenData(tokenData, db)
     return resp
 
 

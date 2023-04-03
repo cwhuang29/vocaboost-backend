@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import UUID4, BaseModel
+from pydantic import BaseModel
 
 from utils.enum import LoginMethodType
 
@@ -16,7 +16,6 @@ class ReqLoginDetail(BaseModel):
 
 
 class ReqLogin(BaseModel):
-    uuid: Optional[UUID4]
     loginMethod: LoginMethodType
     detail: ReqLoginDetail
     timeStamp: datetime

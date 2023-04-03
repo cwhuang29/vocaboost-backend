@@ -30,8 +30,19 @@ class GoogleUser(User):
         orm_mode = True
 
 
+class UserOut(BaseModel):
+    uuid: Optional[UUID4]
+    loginMethod: LoginMethodType
+    firstName: constr(max_length=100)
+    lastName: constr(max_length=100)
+    createdAt: datetime
+
+    class Config:
+        orm_mode = True
+
+
 # Contain only values that should be displayed on the client
-class GoogleUserOut(User):
+class GoogleUserOut(UserOut):
     loginMethod = LoginMethodType.GOOGLE
 
     email: EmailStr

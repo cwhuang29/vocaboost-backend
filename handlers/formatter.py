@@ -1,14 +1,12 @@
-import uuid
-
 from structs.models.user import GoogleUserORM, UserORM
 from structs.requests.auth import ReqLogin
 from structs.schemas.setting import Setting
-from structs.schemas.user import GoogleUser, GoogleUserOut, User
+from structs.schemas.user import GoogleUser, GoogleUserOut, User, UserOut
 from utils.enum import LoginMethodType
 from utils.setting import DEFAULT_SETTING
 
 
-def formatGoogleUserFromORM(dbUser: UserORM, dbDetailedUser: GoogleUserORM) -> GoogleUser:
+def formatGoogleUserFromORM(dbUser: UserORM, dbDetailedUser: GoogleUserORM) -> GoogleUserOut:
     return GoogleUserOut(
         uuid=dbUser.uuid,
         firstName=dbUser.first_name,
@@ -19,7 +17,7 @@ def formatGoogleUserFromORM(dbUser: UserORM, dbDetailedUser: GoogleUserORM) -> G
     )
 
 
-def formatUserFromORM(dbUser: UserORM, dbDetailedUser) -> User:
+def formatUserFromORM(dbUser: UserORM, dbDetailedUser) -> UserOut:
     user = None
     if LoginMethodType(dbUser.method) == LoginMethodType.GOOGLE:
         user = formatGoogleUserFromORM(dbUser, dbDetailedUser)
@@ -27,9 +25,7 @@ def formatUserFromORM(dbUser: UserORM, dbDetailedUser) -> User:
 
 
 def formatUserFromReq(reqLogin: ReqLogin) -> User:
-    uid = reqLogin.uuid or uuid.uuid4()
     return User(
-        uuid=uid,
         loginMethod=reqLogin.loginMethod,
         firstName=reqLogin.detail.firstName,
         lastName=reqLogin.detail.lastName,
@@ -38,9 +34,7 @@ def formatUserFromReq(reqLogin: ReqLogin) -> User:
 
 
 def formatGoogleUserFromReq(reqLogin: ReqLogin) -> GoogleUser:
-    uid = reqLogin.uuid or uuid.uuid4()
     return GoogleUser(
-        uuid=uid,
         loginMethod=reqLogin.loginMethod,
         firstName=reqLogin.detail.firstName,
         lastName=reqLogin.detail.lastName,

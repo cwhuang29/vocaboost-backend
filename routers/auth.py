@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
 
-from handlers.auth import getTokenData, handleLogin, handleLogout
+from handlers.auth import getTokenData, handleLogin, handleLogout, tryToGetTokenData
 from structs.requests.auth import ReqLogin
 from databases.setup import get_db
 from structs.schemas.auth import Token, TokenData
@@ -12,8 +12,8 @@ router = APIRouter()
 
 
 @router.post("/login", tags=[RouterGroupType.AUTH], response_model=Token)
-async def login(req_login: ReqLogin, db: Session = Depends(get_db)):
-    resp = await handleLogin(req_login, db)
+async def login(req_login: ReqLogin, tokenData: Annotated[bool, Depends(tryToGetTokenData)], db: Session = Depends(get_db)):
+    resp = await handleLogin(req_login, tokenData, db)
     return resp
 
 
