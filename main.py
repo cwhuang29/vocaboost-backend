@@ -7,13 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from utils.logger import parseRequestLogFormat
 
-from routers import auth, word
+from routers import auth, user, word
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
 app.include_router(auth.router)
+app.include_router(user.router)
 app.include_router(word.router)
 
 origins = ["http://localhost", "http://localhost:8080"]
@@ -34,7 +35,7 @@ async def add_process_time_header(req: Request, call_next):
     start_time = time.time()
     response = await call_next(req)
     process_time = time.time() - start_time
-    logger.info(parseRequestLogFormat(req, process_time))
+    logger.warning(parseRequestLogFormat(req, process_time))
     response.headers["X-VH-Source"] = 'backend'
     return response
 

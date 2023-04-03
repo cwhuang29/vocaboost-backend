@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import UUID4, BaseModel
 
 from utils.enum import LoginMethodType
 
@@ -11,16 +11,12 @@ class ReqLoginDetail(BaseModel):
     firstName: str
     lastName: str
     scopes: str
-    serverAuthCode: str
+    serverAuthCode: Optional[str] = None
     avatar: str
 
 
 class ReqLogin(BaseModel):
-    uuid: Optional[str]
+    uuid: Optional[UUID4]
     loginMethod: LoginMethodType
     detail: ReqLoginDetail
     timeStamp: datetime
-
-
-class ReqLogout(BaseModel):
-    uuid: str

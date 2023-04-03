@@ -1,46 +1,62 @@
-from fastapi import HTTPException
+import logging
+from typing import Annotated
+
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-import logging
-from handlers.auth_helper import getGoogleUserFromReq
 
-from structs.requests.auth import ReqLogin, ReqLogout
+from handlers.auth_helper import authenticateUser, createAccessToken, setupNewUser, decodeAccessToken
+from handlers.formatter import formatGoogleUserFromReq
+from structs.requests.auth import ReqLogin
+from structs.schemas.auth import Token, TokenData
 from utils.enum import LoginMethodType
-from databases.auth import createLoginRecord, createLogoutRecord, createUser, getUser
+from databases.user import getUserByUUID
+from databases.auth import createLoginRecord, createLogoutRecord
+from utils.message import HTTP_ERROR_MSG
 
 logger = logging.getLogger(__name__)
 
+oauth2Scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-def handle_google_login(reqLogin: ReqLogin, db: Session):
+
+def getTokenData(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData:
+    return decodeAccessToken(token)
+
+
+def handleGoogleLogin(reqLogin: ReqLogin, db: Session) -> TokenData:
     try:
-        user = getGoogleUserFromReq(reqLogin)
+        user = formatGoogleUserFromReq(reqLogin)
     except Exception as err:
+        logger.error(str(err))
         raise HTTPException(status_code=400, detail=str(err))
 
     try:
-        dbUser = getUser(db, reqLogin.uuid)
+        dbUser, dbDetailedUser = authenticateUser(db, reqLogin)
         if not dbUser:
-            dbUser = createUser(db, user)
+            dbUser, dbDetailedUser = setupNewUser(db, user)
+
         createLoginRecord(db, dbUser.id)
-        user.uuid = dbUser.uuid
-    except IntegrityError:  # e.g., email is not unique
-        raise HTTPException(status_code=400)
+        tokenData = TokenData(uuid=dbUser.uuid, method=dbUser.method, email=dbDetailedUser.email)  # pyright: ignore[reportOptionalMemberAccess]
+    except IntegrityError as err:  # e.g., email is not unique
+        raise HTTPException(status_code=400, detail=err._message())
     except Exception as err:
         logger.error(err)
         raise HTTPException(status_code=500)
-    return user
+    return tokenData
 
 
-def handle_login(req_login: ReqLogin, db: Session):
-    user = None
-    if req_login.loginMethod == LoginMethodType.GOOGLE:
-        user = handle_google_login(req_login, db)
+def handleLogin(reqLogin: ReqLogin, db: Session) -> Token:
+    token = None
+    if reqLogin.loginMethod == LoginMethodType.GOOGLE:
+        tokenData = handleGoogleLogin(reqLogin, db)
     else:
-        raise HTTPException(status_code=400)
-    return user
+        raise HTTPException(status_code=400, detail=HTTP_ERROR_MSG.LOGIN_NOT_SUPPORT)
+    token = createAccessToken(tokenData)
+    return token
 
 
-def handle_logout(req_logout: ReqLogout, db: Session):
-    dbUser = getUser(db, req_logout.uuid)
+def handleLogout(tokenData: TokenData, db: Session):
+    dbUser = getUserByUUID(db, tokenData.uuid)
     if dbUser:
         createLogoutRecord(db, dbUser.id)

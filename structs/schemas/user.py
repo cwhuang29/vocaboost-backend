@@ -12,7 +12,6 @@ class User(BaseModel):
     firstName: constr(max_length=100)
     lastName: constr(max_length=100)
     createdAt: datetime
-    updatedAt: Optional[datetime] = None
 
     class Config:
         orm_mode = True
@@ -29,3 +28,11 @@ class GoogleUser(User):
 
     class Config:
         orm_mode = True
+
+
+# Contain only values that should be displayed on the client
+class GoogleUserOut(User):
+    loginMethod = LoginMethodType.GOOGLE
+
+    email: EmailStr
+    avatar: constr(max_length=600)
