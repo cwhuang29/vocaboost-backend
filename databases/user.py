@@ -1,7 +1,7 @@
 from pydantic import UUID4
 from sqlalchemy.orm import Session
-from databases.auth_helper import getDetailedUserORM, getUserORM
 
+from databases.auth_helper import getDetailedUserORM, getUserORM
 from structs.models.user import GoogleUserORM, UserORM
 from structs.schemas.user import User
 from utils.enum import LoginMethodType

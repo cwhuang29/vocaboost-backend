@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from databases.user import getGoogleUser, getUser
 
+from databases.user import getGoogleUser, getUser
 from structs.models.user import GoogleUserORM, UserORM
 from structs.schemas.user import GoogleUser, User
 from utils.enum import LoginMethodType

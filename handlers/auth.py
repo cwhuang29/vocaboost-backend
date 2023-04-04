@@ -13,7 +13,6 @@ from structs.requests.auth import ReqLogin
 from structs.schemas.auth import Token, TokenData
 from structs.schemas.user import User
 from utils.enum import LoginMethodType
-from databases.user import getUserByUUID
 from databases.auth import createLoginRecord, createLogoutRecord
 from utils.message import ERROR_MSG, getErrMsg
 

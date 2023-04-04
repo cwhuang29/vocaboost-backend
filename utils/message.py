@@ -17,13 +17,15 @@ class ERROR_MSG(str, Enum):
 
     DATABASE_ERR = "An error occurred while writing to DB"
 
+    HEADER_INVALID = "Header verify failed"
+
     JWT_ERROR_MALFORMED = "Token is malformed"
     JWT_ERROR_UNVERIFIABLE = "Token could not be verified because of signing problems"
     JWT_ERROR_SIGNATURE_INVALID = "Signature validation failed"
     JWT_ERROR_EXPIRED = "Login session expired. You have to relogin"  # Token is expired
     JWT_ERROR_NOT_VALID_YET = "Token is not yet valid before sometime"
     JWT_PAYLOAD_MALFORMED = "YOU have to relogin"
-    JWT_UNKNOWN = "cAN NOT HANDLe this token"
+    JWT_UNKNOWN = "Can not handle this token"
 
     LOGIN_FIRST = 'You should login first'
     LOGIN_NOT_SUPPORT = 'Login type is not supported'
@@ -34,5 +36,7 @@ def getErrMsg(errHead=ERROR_MSG.UNEXPECTED_ERR, errBody='') -> dict:
 
 
 getUnexpectedErrMsg = partial(getErrMsg, ERROR_MSG.UNEXPECTED_ERR, ERROR_MSG.TRY_AGAIN)
+
+getNoSourceHeaderMsg = partial(getErrMsg, ERROR_MSG.HEADER_INVALID)
 
 getShouldLoginMsg = partial(getErrMsg, ERROR_MSG.PERMISSION_DENIED, ERROR_MSG.LOGIN_FIRST)

@@ -1,6 +1,11 @@
 from enum import Enum
 
 
+class CLIENT_SOURCE(str, Enum):
+    MOBILE = 'mobile'
+    EXTENSION = 'extension'
+
+
 class AuthHistoryType(int, Enum):
     SIGNEDIN = 0
     SIGNEDOUT = 1

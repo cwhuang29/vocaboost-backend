@@ -1,30 +1,29 @@
 import time
 import logging
 
-
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-
-from utils.logger import parseRequestLogFormat
+from handlers.header import verifyHeader
 
 from routers import auth, user, word
+from utils.logger import parseRequestLogFormat
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+origins = ["http://localhost", "http://localhost:8080"]
+
+app = FastAPI(dependencies=[Depends(verifyHeader)])
 
 app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(word.router)
-
-origins = ["http://localhost", "http://localhost:8080"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     max_age=1800,
-    allow_methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allow_methods=['GET', 'POST', 'PUT', 'OPTIONS'],
     allow_headers=["Accept", "Authorization", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "X-VH-Source"],
     expose_headers=['X-VH-Source']
 )

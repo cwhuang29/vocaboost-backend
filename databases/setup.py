@@ -12,9 +12,9 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
 Base = declarative_base()
 
 
-def get_db():
+def getDB():
     db = SessionLocal()
     try:
-        yield db
+        yield db  # Injected into path operations
     finally:
-        db.close()
+        db.close()  # Executed after the response has been delivered
