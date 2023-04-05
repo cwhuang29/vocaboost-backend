@@ -30,6 +30,8 @@ class ERROR_MSG(str, Enum):
     LOGIN_FIRST = 'You should login first'
     LOGIN_NOT_SUPPORT = 'Login type is not supported'
 
+    UPDATE_CONFLICT = 'The data here is outdated, it has been updated'
+
 
 def getErrMsg(errHead=ERROR_MSG.UNEXPECTED_ERR, errBody='') -> dict:
     return {"errHead": errHead, "errBody": errBody}

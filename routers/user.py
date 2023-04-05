@@ -1,28 +1,34 @@
-from typing import Annotated
-
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, WebSocket
 from sqlalchemy.orm import Session
 
 from databases.setup import getDB
-from handlers.auth import getTokenData
-from handlers.user import getUserSettings, getDisplayUserByTokenData
-from structs.schemas.auth import TokenData
+from handlers.user import getUserSetting, getDisplayUserByTokenData, updateUserSetting, updateUserSettingWS
+from routers.dependency import tokenDataDep, dbUserDep
 from structs.schemas.setting import Setting
+from structs.schemas.user import UserOut
 from utils.enum import RouterGroupType
 
 router = APIRouter(prefix="/users", tags=[RouterGroupType.USER])
 
 
-tokenDataDep = Annotated[TokenData, Depends(getTokenData)]
-
-
 @router.get("/me")
-async def me(tokenData: tokenDataDep, db: Session = Depends(getDB)):
+async def me(tokenData: tokenDataDep, db: Session = Depends(getDB)) -> UserOut:
     resp = await getDisplayUserByTokenData(tokenData, db)
     return resp
 
 
 @router.get("/setting", response_model=Setting)
-async def getSettings(tokenData: tokenDataDep, db: Session = Depends(getDB)):
-    resp = await getUserSettings(tokenData, db)
+async def getSetting(dbUser: dbUserDep, db: Session = Depends(getDB)) -> Setting:
+    resp = await getUserSetting(dbUser, db)
     return resp
+
+
+@router.put("/setting")
+async def updateSetting(setting: Setting, dbUser: dbUserDep, db: Session = Depends(getDB)):
+    resp = await updateUserSetting(dbUser, setting, db)
+    return resp
+
+
+@router.websocket("/setting")
+async def updateSettingWebSocket(websocket: WebSocket, db: Session = Depends(getDB)):
+    await updateUserSettingWS(websocket, db)

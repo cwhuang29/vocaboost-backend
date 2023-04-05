@@ -15,9 +15,9 @@ async def getUserByUUID(db: Session, uuid: UUID4):
     return db.query(UserORM).filter(UserORM.uuid == str(uuid)).first()
 
 
-async def getDetailedUser(db: Session, login_method: int, user_id: int):
-    if login_method == LoginMethodType.GOOGLE.value:
-        return db.query(GoogleUserORM).filter(GoogleUserORM.user_id == user_id).first()
+async def getDetailedUser(db: Session, loginMethod: int, userId: int):
+    if loginMethod == LoginMethodType.GOOGLE.value:
+        return db.query(GoogleUserORM).filter(GoogleUserORM.userId == userId).first()
     return None
 
 

@@ -1,15 +1,15 @@
 from structs.models.auth import AuthHistoryORM
 from structs.models.user import GoogleUserORM, UserORM
 from structs.schemas.user import GoogleUser, User
-from utils.enum import AuthHistoryType, LoginMethodType
+from utils.enum import ClientSourceType, AuthHistoryType, LoginMethodType
 
 
 def getGoogleUserORM(user: GoogleUser, id: int) -> GoogleUserORM:
     return GoogleUserORM(
-        user_id=id,
+        userId=id,
         email=user.email,
         scopes=user.scopes,
-        server_auth_code=user.serverAuthCode,
+        serverAuthCode=user.serverAuthCode,
         avatar=user.avatar,
     )
 
@@ -24,15 +24,17 @@ def getDetailedUserORM(user: User, id: int):
 def getUserORM(user: User) -> UserORM:
     return UserORM(
         uuid=user.uuid,
-        first_name=user.firstName,
-        last_name=user.lastName,
+        firstName=user.firstName,
+        lastName=user.lastName,
         method=user.loginMethod.value,
-        created_at=user.createdAt,
+        createdAt=user.createdAt,
     )
 
 
-def getAuthHistoryORM(id: int, authType: AuthHistoryType):
+def getAuthHistoryORM(id: int, source: ClientSourceType, authType: AuthHistoryType):
+    s = source.value if source != ClientSourceType.UNKNOWN else None
     return AuthHistoryORM(
-        user_id=id,
-        action=authType.value
+        userId=id,
+        source=s,
+        action=authType.value,
     )

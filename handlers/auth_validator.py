@@ -19,7 +19,7 @@ async def checkGoogleLoginUser(db: Session, user: GoogleUser):
         return None
     if sorted(ast.literal_eval(u.scopes)) != sorted(ast.literal_eval(user.scopes)):
         return None
-    if u.server_auth_code != user.serverAuthCode:
+    if u.serverAuthCode != user.serverAuthCode:
         return None
     return u
 
@@ -37,7 +37,7 @@ async def checkLoginPayload(db: Session, user: User) -> tuple[UserORM, GoogleUse
     if dbDetailedUser is None:
         return None, None
 
-    dbUser = await getUser(db, dbDetailedUser.user_id)
+    dbUser = await getUser(db, dbDetailedUser.userId)
     if checkUser(user, dbUser):
         return None, None
     return dbUser, dbDetailedUser

@@ -7,7 +7,7 @@ from databases.setup import Base
 class CollectedWordORM(Base):
     __tablename__ = "collected_words"
 
-    user_id = Column(Integer, primary_key=True, index=True)
-    word_id = Column(Integer, primary_key=True, index=True)
-    is_valid = Column(Integer)
-    updated_at = Column(DateTime, default=func.now())
+    userId = Column('user_id', Integer, primary_key=True, index=True)
+    wordId = Column('word_id', Integer, primary_key=True, index=True)
+    isValid = Column('is_valid', Integer)
+    updatedAt = Column('updated_at', DateTime, default=func.now())

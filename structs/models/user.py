@@ -9,18 +9,18 @@ class UserORM(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     uuid = Column(String, unique=True, index=True)
-    first_name = Column(String)
-    last_name = Column(String)
+    firstName = Column('first_name', String)
+    lastName = Column('last_name', String)
     method = Column(Integer)
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime)
+    createdAt = Column('created_at', DateTime, default=func.now())
+    updatedAt = Column('updated_at', DateTime)
 
 
 class GoogleUserORM(Base):
     __tablename__ = "users_google"
 
-    user_id = Column(Integer, primary_key=True, index=True)
+    userId = Column('user_id', Integer, primary_key=True, index=True)
     scopes = Column(String)
-    server_auth_code = Column(String)
+    serverAuthCode = Column('server_auth_code', String)
     email = Column(String)
     avatar = Column(String)

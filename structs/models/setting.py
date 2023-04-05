@@ -7,11 +7,11 @@ from databases.setup import Base
 class SettingORM(Base):
     __tablename__ = "settings"
 
-    user_id = Column(Integer, primary_key=True, index=True)
-    highlight_color = Column(String)
-    language = Column(String)
-    font_size = Column(String)
-    show_detail = Column(SmallInteger)
-    collected_words = Column(String)
-    suspended_pages = Column(Text)
-    updated_at = Column(DateTime, default=func.now())
+    userId = Column('user_id', Integer, primary_key=True, index=True)
+    highlightColor = Column('highlight_color', String)
+    language = Column('language', String)
+    fontSize = Column('font_size', String)
+    showDetail = Column('show_detail', SmallInteger)
+    collectedWords = Column('collected_words', String)
+    suspendedPages = Column('suspended_pages', Text)
+    updatedAt = Column('updated_at', DateTime, default=func.now())

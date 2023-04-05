@@ -1,9 +1,8 @@
 import time
 import logging
 
-from fastapi import Depends, FastAPI, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from handlers.header import verifyHeader
 
 from routers import auth, user, word
 from utils.logger import parseRequestLogFormat
@@ -12,11 +11,12 @@ logger = logging.getLogger(__name__)
 
 origins = ["http://localhost", "http://localhost:8080"]
 
-app = FastAPI(dependencies=[Depends(verifyHeader)])
+app = FastAPI()
 
 app.include_router(prefix="/v1", router=auth.router)
 app.include_router(prefix="/v1", router=user.router)
 app.include_router(prefix="/v1", router=word.router)
+
 
 app.add_middleware(
     CORSMiddleware,

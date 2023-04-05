@@ -1,17 +1,21 @@
-import ast
+import logging
 
+from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import Session
+
+from databases.setting import tryUpdateSetting
+from handlers.formatter import formatSettingFromORM
+from structs.models.user import UserORM
 from structs.schemas.setting import Setting
-from structs.models.setting import SettingORM
+from utils.message import ERROR_MSG
+
+logger = logging.getLogger(__name__)
 
 
-def getSettingFromORM(dbSetting: SettingORM) -> Setting:
-    return Setting(
-        userId=dbSetting.user_id,
-        highlightColor=dbSetting.highlight_color,
-        language=dbSetting.language,
-        fontSize=dbSetting.font_size,
-        showDetail=True if dbSetting.show_detail == 1 else False,
-        collectedWords=ast.literal_eval(dbSetting.collected_words),
-        suspendedPages=ast.literal_eval(dbSetting.suspended_pages),
-        updatedAt=dbSetting.updated_at,
-    )
+async def tryUpdateUserSetting(dbUser: UserORM, setting: Setting, db: Session):
+    dbSetting = await tryUpdateSetting(db, dbUser.id, setting)
+    finalSetting = formatSettingFromORM(dbSetting)
+
+    if finalSetting.updatedAt != setting.updatedAt:
+        return {'data': jsonable_encoder(finalSetting), 'isStale': True, 'error': ERROR_MSG.UPDATE_CONFLICT}
+    return {'data': jsonable_encoder(finalSetting), 'isStale': False}

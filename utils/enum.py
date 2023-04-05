@@ -1,9 +1,10 @@
 from enum import Enum
 
 
-class CLIENT_SOURCE(str, Enum):
-    MOBILE = 'mobile'
-    EXTENSION = 'extension'
+class ClientSourceType(int, Enum):
+    MOBILE = 0
+    EXTENSION = 1
+    UNKNOWN = 2
 
 
 class AuthHistoryType(int, Enum):
@@ -21,6 +22,12 @@ class LoginMethodType(int, Enum):
 class ManageWordType(int, Enum):
     ADD = 0
     REMOVE = 1
+
+
+class CLIENT_SOURCE(str, Enum):
+    MOBILE = 'mobile'
+    EXTENSION = 'extension'
+    UNKNOWN = 'unknown'
 
 
 class RouterGroupType(str, Enum):

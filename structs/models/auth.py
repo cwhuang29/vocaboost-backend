@@ -8,6 +8,7 @@ class AuthHistoryORM(Base):
     __tablename__ = "auth_history"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
+    userId = Column('user_id', Integer)
     action = Column(Integer)
-    created_at = Column(DateTime, default=func.now())
+    source = Column(Integer)
+    createdAt = Column('created_at', DateTime, default=func.now())

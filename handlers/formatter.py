@@ -1,3 +1,7 @@
+import ast
+from datetime import datetime
+
+from structs.models.setting import SettingORM
 from structs.models.user import GoogleUserORM, UserORM
 from structs.requests.auth import ReqLogin
 from structs.schemas.setting import Setting
@@ -9,9 +13,9 @@ from utils.setting import DEFAULT_SETTING
 def formatGoogleUserFromORM(dbUser: UserORM, dbDetailedUser: GoogleUserORM) -> GoogleUserOut:
     return GoogleUserOut(
         uuid=dbUser.uuid,
-        firstName=dbUser.first_name,
-        lastName=dbUser.last_name,
-        createdAt=dbUser.created_at,
+        firstName=dbUser.firstName,
+        lastName=dbUser.lastName,
+        createdAt=dbUser.createdAt,
         email=dbDetailedUser.email,
         avatar=dbDetailedUser.avatar,
     )
@@ -55,4 +59,30 @@ def formatDefaultSetting(userId: int) -> Setting:
         showDetail=DEFAULT_SETTING['showDetail'],
         collectedWords=DEFAULT_SETTING['collectedWords'],
         suspendedPages=DEFAULT_SETTING['suspendedPages'],
+    )
+
+
+def formatSettingFromWS(setting: dict, userId: int, ts: datetime) -> Setting:
+    return Setting(
+        userId=userId,
+        highlightColor=setting['highlightColor'],
+        language=setting['language'],
+        fontSize=setting['fontSize'],
+        showDetail=setting['showDetail'],
+        collectedWords=setting['collectedWords'],
+        suspendedPages=setting['suspendedPages'],
+        updatedAt=ts,
+    )
+
+
+def formatSettingFromORM(dbSetting: SettingORM) -> Setting:
+    return Setting(
+        userId=dbSetting.userId,
+        highlightColor=dbSetting.highlightColor,
+        language=dbSetting.language,
+        fontSize=dbSetting.fontSize,
+        showDetail=True if dbSetting.showDetail == 1 else False,
+        collectedWords=ast.literal_eval(dbSetting.collectedWords),
+        suspendedPages=ast.literal_eval(dbSetting.suspendedPages),
+        updatedAt=dbSetting.updatedAt,
     )

@@ -1,19 +1,19 @@
-from typing import Annotated
+from typing import List
 
 from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
 
 from databases.setup import getDB
-from handlers.auth import getTokenData
+from handlers.header import verifyHeader
+from routers.dependency import dbUserDep
 from handlers.word import getUserCollectedWords
-from structs.schemas.auth import TokenData
 
 from utils.enum import RouterGroupType
 
-router = APIRouter(prefix="/manage-words", tags=[RouterGroupType.WORD])
+router = APIRouter(prefix="/collected-words", tags=[RouterGroupType.WORD], dependencies=[Depends(verifyHeader)])
 
 
 @router.get("")
-async def getCollectedWords(tokenData: Annotated[TokenData, Depends(getTokenData)], db: Session = Depends(getDB)):
-    await getUserCollectedWords(tokenData, db)
-    return {"num_of_words": 0}
+async def getCollectedWords(dbUser: dbUserDep, db: Session = Depends(getDB)) -> List[int]:
+    wordIds = await getUserCollectedWords(dbUser, db)
+    return wordIds
