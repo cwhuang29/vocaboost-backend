@@ -18,4 +18,4 @@ class ReqLoginDetail(BaseModel):
 class ReqLogin(BaseModel):
     loginMethod: LoginMethodType
     detail: ReqLoginDetail
-    timeStamp: datetime
+    timeStamp: Optional[datetime]

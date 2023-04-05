@@ -1,3 +1,4 @@
+import ast
 from sqlalchemy.orm import Session
 
 from databases.user import getGoogleUser, getUser
@@ -14,13 +15,18 @@ def checkUser(user: User, dbUser: UserORM):
 
 async def checkGoogleLoginUser(db: Session, user: GoogleUser):
     u = await getGoogleUser(db, user.email)
-    if u is None or u.scopes != user.scopes or u.server_auth_code != user.serverAuthCode:
+    if u is None:
+        return None
+    if sorted(ast.literal_eval(u.scopes)) != sorted(ast.literal_eval(user.scopes)):
+        return None
+    if u.server_auth_code != user.serverAuthCode:
         return None
     return u
 
 
 async def checkDetailedLoginUser(db: Session, user: User):
     dbDetailedUser = None
+    print(user.loginMethod)
     if user.loginMethod == LoginMethodType.GOOGLE:
         dbDetailedUser = await checkGoogleLoginUser(db, user)
     return dbDetailedUser

@@ -11,7 +11,7 @@ class User(BaseModel):
     loginMethod: LoginMethodType
     firstName: constr(max_length=100)
     lastName: constr(max_length=100)
-    createdAt: datetime
+    createdAt: Optional[datetime]
 
     class Config:
         orm_mode = True

@@ -14,9 +14,9 @@ origins = ["http://localhost", "http://localhost:8080"]
 
 app = FastAPI(dependencies=[Depends(verifyHeader)])
 
-app.include_router(auth.router)
-app.include_router(user.router)
-app.include_router(word.router)
+app.include_router(prefix="/v1", router=auth.router)
+app.include_router(prefix="/v1", router=user.router)
+app.include_router(prefix="/v1", router=word.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,4 +41,4 @@ async def add_process_time_header(req: Request, call_next):
 
 @app.get("/")
 def read_root():
-    return {"Hello": "This is the backend server of Vocabilary Highlighter"}
+    return {"Hello": "This is the backend server of Vocabulary Highlighter"}
