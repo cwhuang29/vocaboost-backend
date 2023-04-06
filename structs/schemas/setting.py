@@ -16,3 +16,12 @@ class Setting(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UpdateSettingOut(BaseModel):
+    data: Optional[Setting] = None
+    isStale: Optional[bool] = None
+    error: Optional[List[int]] = None
+
+    class Config:
+        orm_mode = True

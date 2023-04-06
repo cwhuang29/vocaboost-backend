@@ -21,7 +21,7 @@ from utils.message import ERROR_MSG, getErrMsg
 
 logger = logging.getLogger(__name__)
 
-oauth2Scheme = OAuth2PasswordBearer(tokenUrl="token")  # Raise exception if token is not valid
+oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')  # Raise exception if token is not valid
 
 
 def getTokenData(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData:

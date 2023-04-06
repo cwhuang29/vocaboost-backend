@@ -4,7 +4,7 @@ from databases.setup import Base
 
 
 class GreWordORM(Base):
-    __tablename__ = "gre_words"
+    __tablename__ = 'gre_words'
 
     id = Column(Integer, primary_key=True, index=True)
     word = Column(String)

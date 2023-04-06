@@ -5,7 +5,7 @@ from structs.models.setting import SettingORM
 from structs.models.user import GoogleUserORM, UserORM
 from structs.requests.auth import ReqLogin
 from structs.schemas.setting import Setting
-from structs.schemas.user import GoogleUser, GoogleUserOut, User, UserOut
+from structs.schemas.user import GoogleUser, GoogleUserOut, User
 from utils.enum import LoginMethodType
 from utils.setting import DEFAULT_SETTING
 
@@ -21,7 +21,7 @@ def formatGoogleUserFromORM(dbUser: UserORM, dbDetailedUser: GoogleUserORM) -> G
     )
 
 
-def formatUserFromORM(dbUser: UserORM, dbDetailedUser) -> UserOut:
+def formatUserFromORM(dbUser: UserORM, dbDetailedUser):
     user = None
     if LoginMethodType(dbUser.method) == LoginMethodType.GOOGLE:
         user = formatGoogleUserFromORM(dbUser, dbDetailedUser)

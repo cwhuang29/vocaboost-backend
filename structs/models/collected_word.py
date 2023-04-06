@@ -5,7 +5,7 @@ from databases.setup import Base
 
 
 class CollectedWordORM(Base):
-    __tablename__ = "collected_words"
+    __tablename__ = 'collected_words'
 
     userId = Column('user_id', Integer, primary_key=True, index=True)
     wordId = Column('word_id', Integer, primary_key=True, index=True)

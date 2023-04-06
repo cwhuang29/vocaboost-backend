@@ -16,41 +16,41 @@ from structs.schemas.auth import Token, TokenData
 from structs.schemas.user import User
 from utils.message import getShouldLoginMsg
 
-oauth2Scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 HTTPCredentialsException = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail=getShouldLoginMsg(),
-    headers={"WWW-Authenticate": "Bearer"},
+    headers={'WWW-Authenticate': 'Bearer'},
 )
 
 
 def createAccessToken(tokenData: TokenData, expiresDelta: timedelta | None = None) -> Token:
     payload = {
-        "sub": tokenData.uuid,
-        "method": tokenData.method,
-        "firstName": tokenData.firstName,
-        "lastName": tokenData.lastName,
-        "email": tokenData.email,
+        'sub': tokenData.uuid,
+        'method': tokenData.method,
+        'firstName': tokenData.firstName,
+        'lastName': tokenData.lastName,
+        'email': tokenData.email,
     }
     lifespan = expiresDelta if expiresDelta else timedelta(minutes=int(JWT_ACCESS_TOKEN_EXPIRE_MINUTES))
     expire = datetime.utcnow() + lifespan
 
     p = payload.copy()
-    p.update({"exp": expire})
+    p.update({'exp': expire})
     encodedJWT = jwt.encode(p, JWT_SECRET_KEY, algorithm=JWT_ALGO)
-    return Token(accessToken=encodedJWT, tokenType="bearer")
+    return Token(accessToken=encodedJWT, tokenType='bearer')
 
 
 def decodeAccessToken(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData:
     tokenData = None
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGO])
-        uuid: str = payload.get("sub")
-        method: int = payload.get("method")
-        firstName: int = payload.get("firstName")
-        lastName: int = payload.get("lastName")
-        email: int = payload.get("email")  # email may be None if we support different login methods in future
+        uuid: str = payload.get('sub')
+        method: int = payload.get('method')
+        firstName: int = payload.get('firstName')
+        lastName: int = payload.get('lastName')
+        email: int = payload.get('email')  # email may be None if we support different login methods in future
 
         if uuid is None or method is None:
             raise HTTPCredentialsException

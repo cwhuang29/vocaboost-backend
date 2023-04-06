@@ -10,13 +10,12 @@ from handlers.user_helper import tryUpdateUserSetting
 from handlers.websocket_helper import getWSUpdateSettingPayload
 from structs.models.user import UserORM
 from structs.schemas.auth import TokenData
-from structs.schemas.setting import Setting
-from structs.schemas.user import UserOut
+from structs.schemas.setting import Setting, UpdateSettingOut
 
 logger = logging.getLogger(__name__)
 
 
-async def getDisplayUserByTokenData(tokenData: TokenData, db: Session) -> UserOut:
+async def getDisplayUserByTokenData(tokenData: TokenData, db: Session):
     dbUser, dbDetailedUser = await getUserAndDetailedUserByTokenData(db, tokenData)
     if dbUser is None:
         raise HTTPCredentialsException
@@ -29,7 +28,7 @@ async def getUserSetting(dbUser: UserORM, db: Session) -> Setting:
     return setting
 
 
-async def updateUserSetting(dbUser: UserORM, setting: Setting, db: Session):
+async def updateUserSetting(dbUser: UserORM, setting: Setting, db: Session) -> UpdateSettingOut:
     result = await tryUpdateUserSetting(dbUser, setting, db)
     return result
 

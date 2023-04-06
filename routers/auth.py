@@ -11,13 +11,13 @@ from utils.enum import RouterGroupType
 router = APIRouter(tags=[RouterGroupType.AUTH])
 
 
-@router.post("/login", response_model=Token)
+@router.post('/login', response_model=Token)
 async def login(reqLogin: ReqLogin, tokenData: tryToGetTokenDataDep, source: sourceHeaderDep, db: Session = Depends(getDB)):
     resp = await handleLogin(reqLogin, tokenData, source, db)
     return resp
 
 
-@router.post("/logout")
+@router.post('/logout')
 async def logout(tokenData: tokenDataDep, source: sourceHeaderDep, db: Session = Depends(getDB)):
     await handleLogout(tokenData, source, db)
-    return {"result": "success"}
+    return {'result': 'success'}

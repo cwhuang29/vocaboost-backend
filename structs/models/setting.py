@@ -5,7 +5,7 @@ from databases.setup import Base
 
 
 class SettingORM(Base):
-    __tablename__ = "settings"
+    __tablename__ = 'settings'
 
     userId = Column('user_id', Integer, primary_key=True, index=True)
     highlightColor = Column('highlight_color', String)

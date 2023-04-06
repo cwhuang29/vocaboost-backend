@@ -5,7 +5,7 @@ from databases.setup import Base
 
 
 class UserORM(Base):
-    __tablename__ = "users"
+    __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, index=True)
     uuid = Column(String, unique=True, index=True)
@@ -17,7 +17,7 @@ class UserORM(Base):
 
 
 class GoogleUserORM(Base):
-    __tablename__ = "users_google"
+    __tablename__ = 'users_google'
 
     userId = Column('user_id', Integer, primary_key=True, index=True)
     scopes = Column(String)
