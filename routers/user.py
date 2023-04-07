@@ -24,6 +24,7 @@ async def getSetting(dbUser: dbUserDep, db: Session = Depends(getDB)) -> Setting
 
 @router.put('/setting')
 async def updateSetting(setting: Setting, dbUser: dbUserDep, db: Session = Depends(getDB)) -> UpdateSettingOut:
+    # Note that the datetime object had been transformed to UTC timezone by fastapi already!!!
     resp = await updateUserSetting(dbUser, setting, db)
     return resp
 

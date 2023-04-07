@@ -1,3 +1,4 @@
+from datetime import datetime
 from structs.models.auth import AuthHistoryORM
 from structs.models.user import GoogleUserORM, UserORM
 from structs.schemas.user import GoogleUser, User
@@ -37,4 +38,5 @@ def getAuthHistoryORM(id: int, source: ClientSourceType, authType: AuthHistoryTy
         userId=id,
         source=s,
         action=authType.value,
+        createdAt=datetime.utcnow()  # The default value set by sqlalchemy would be timezone-awared time
     )

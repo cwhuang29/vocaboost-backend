@@ -5,13 +5,13 @@ from handlers.auth import handleLogin, handleLogout
 from routers.dependency import tokenDataDep, tryToGetTokenDataDep, sourceHeaderDep
 from structs.requests.auth import ReqLogin
 from databases.setup import getDB
-from structs.schemas.auth import Token
+from structs.schemas.auth import LoginOut
 from utils.enum import RouterGroupType
 
 router = APIRouter(tags=[RouterGroupType.AUTH])
 
 
-@router.post('/login', response_model=Token)
+@router.post('/login', response_model=LoginOut)
 async def login(reqLogin: ReqLogin, tokenData: tryToGetTokenDataDep, source: sourceHeaderDep, db: Session = Depends(getDB)):
     resp = await handleLogin(reqLogin, tokenData, source, db)
     return resp

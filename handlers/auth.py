@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated
+from typing import Annotated, Tuple
 
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer
@@ -13,7 +13,7 @@ from handlers.auth_validator import checkLoginPayload
 from handlers.formatter import formatGoogleUserFromReq
 from structs.models.user import UserORM
 from structs.requests.auth import ReqLogin
-from structs.schemas.auth import Token, TokenData
+from structs.schemas.auth import LoginOut, TokenData
 from structs.schemas.user import User
 from utils.enum import ClientSourceType, LoginMethodType
 from databases.auth import createLoginRecord, createLogoutRecord
@@ -58,8 +58,9 @@ def parseReqPayload(reqLogin: ReqLogin) -> User:
         raise HTTPException(status_code=400, detail=getErrMsg(errHead=ERROR_MSG.TRY_AGAIN, errBody=str(err)))
 
 
-async def authenticateLogin(user: User, tokenData: TokenData | None, db: Session) -> TokenData:
+async def authenticateLogin(user: User, tokenData: TokenData | None, db: Session) -> Tuple[TokenData, bool]:
     try:
+        isNewUser = False
         dbUser, dbDetailedUser = None, None
         if tokenData:
             # This is a valid and signed in user
@@ -68,9 +69,10 @@ async def authenticateLogin(user: User, tokenData: TokenData | None, db: Session
             # The token might had expired, or this is a new user first time login
             dbUser, dbDetailedUser = await checkLoginPayload(db, user)
             if not dbUser:
+                isNewUser = True
                 dbUser, dbDetailedUser = await setupNewUser(db, user)
         tokenData = createTokenData(dbUser.uuid, dbUser.method, dbUser.firstName, dbUser.lastName, dbDetailedUser.email)  # pyright: ignore[reportOptionalMemberAccess]
-        return tokenData
+        return tokenData, isNewUser
     except IntegrityError as err:  # e.g., email is not unique
         raise HTTPException(status_code=400, detail=getErrMsg(errHead=ERROR_MSG.TRY_AGAIN, errBody=err._message()))
     except Exception as err:
@@ -78,13 +80,13 @@ async def authenticateLogin(user: User, tokenData: TokenData | None, db: Session
         raise HTTPException(status_code=500)
 
 
-async def handleLogin(reqLogin: ReqLogin, tokenData: TokenData | None, source: ClientSourceType, db: Session) -> Token:
+async def handleLogin(reqLogin: ReqLogin, tokenData: TokenData | None, source: ClientSourceType, db: Session) -> LoginOut:
     user = parseReqPayload(reqLogin)
-    tokenData = await authenticateLogin(user, tokenData, db)
+    tokenData, isNewUser = await authenticateLogin(user, tokenData, db)
 
     await createLoginRecord(db, tokenData.uuid, source)
     token = createAccessToken(tokenData)
-    return token
+    return LoginOut(token=token, isNewUser=isNewUser)
 
 
 async def handleLogout(tokenData: TokenData, source: ClientSourceType, db: Session) -> None:

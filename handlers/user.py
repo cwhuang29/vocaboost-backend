@@ -53,7 +53,7 @@ async def updateUserSettingWS(websocket: WebSocket, db: Session):
                 resp = parsed
             else:
                 dbUser, setting = parsed['dbUser'], parsed['setting']
-                resp = await tryUpdateUserSetting(dbUser, setting, db)
+                resp = await updateUserSetting(dbUser, setting, db)
             await websocket.send_json(resp)
     except WebSocketDisconnect:
         pass

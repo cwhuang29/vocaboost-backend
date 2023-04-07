@@ -5,13 +5,13 @@ from pydantic import BaseModel, conint, constr
 
 
 class Setting(BaseModel):
-    userId: conint(ge=0)
-    highlightColor: Optional[constr(max_length=20)]
-    language: Optional[constr(max_length=20)]
-    fontSize: Optional[constr(max_length=20)]
-    showDetail: Optional[bool]
-    collectedWords: Optional[List[int]]
-    suspendedPages: Optional[List[str]]
+    userId: Optional[conint(ge=0)]
+    highlightColor: constr(max_length=20)
+    language: constr(max_length=20)
+    fontSize: constr(max_length=20)
+    showDetail: bool
+    collectedWords: List[int]
+    suspendedPages: List[str]
     updatedAt: Optional[datetime] = None
 
     class Config:
@@ -21,7 +21,4 @@ class Setting(BaseModel):
 class UpdateSettingOut(BaseModel):
     data: Optional[Setting] = None
     isStale: Optional[bool] = None
-    error: Optional[List[int]] = None
-
-    class Config:
-        orm_mode = True
+    error: Optional[str] = None

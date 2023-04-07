@@ -1,3 +1,4 @@
+from datetime import timezone
 from sqlalchemy.orm import Session
 
 from databases.setting_helper import getSettingORM
@@ -13,19 +14,21 @@ async def tryUpdateSetting(db: Session, userId: int, setting: Setting) -> Settin
     '''
     Only update the entity if argument's updatedAt is newer, otherwise return the original value
     '''
+    isStale = False
     dbSetting = await getSettingByUser(db, userId)
-    if dbSetting.updatedAt > setting.updatedAt:  # pyright: ignore[reportOptionalMemberAccess]
-        return dbSetting
+    if dbSetting.updatedAt.replace(tzinfo=timezone.utc) > setting.updatedAt:  # pyright: ignore[reportOptionalMemberAccess]
+        isStale = True
+        return dbSetting, isStale
 
     for key, value in setting.dict(exclude_unset=True).items():
-        if type(value) is list:
+        if isinstance(value, list):
             value = str(value)
         setattr(dbSetting, key, value)
     setattr(dbSetting, 'showDetail', 1 if setting.showDetail else 0)
 
     db.add(dbSetting)
     db.commit()
-    return dbSetting
+    return dbSetting, isStale
 
 
 async def createSetting(db: Session, setting: Setting) -> SettingORM:

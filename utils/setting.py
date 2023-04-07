@@ -1,3 +1,4 @@
+from datetime import datetime
 from utils.enum import HIGHLIGHTER_BG_COLORS, HIGHLIGHTER_FONT_SIZE, LANGS
 
 
@@ -8,4 +9,5 @@ DEFAULT_SETTING = {
     'showDetail': True,
     'collectedWords': [],
     'suspendedPages': [],
+    'updatedAt': datetime(2000, 1, 1, 18, 0, 0)
 }

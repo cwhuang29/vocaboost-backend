@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 async def tryUpdateUserSetting(dbUser: UserORM, setting: Setting, db: Session) -> UpdateSettingOut:
-    dbSetting = await tryUpdateSetting(db, dbUser.id, setting)
+    dbSetting, isStale = await tryUpdateSetting(db, dbUser.id, setting)
     finalSetting = formatSettingFromORM(dbSetting)
 
-    if finalSetting.updatedAt != setting.updatedAt:
-        return UpdateSettingOut(data=jsonable_encoder(finalSetting), isStale=True, error=ERROR_MSG.UPDATE_CONFLICT)
-    return UpdateSettingOut(data=jsonable_encoder(finalSetting), isStale=False)
+    if isStale:
+        return jsonable_encoder(UpdateSettingOut(data=finalSetting, isStale=isStale, error=ERROR_MSG.UPDATE_CONFLICT))
+    return jsonable_encoder(UpdateSettingOut(data=finalSetting, isStale=isStale))

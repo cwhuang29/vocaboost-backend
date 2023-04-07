@@ -12,3 +12,8 @@ class TokenData(BaseModel):
     firstName: str | None = None
     lastName: str | None = None
     email: str | None = None
+
+
+class LoginOut(BaseModel):
+    token: Token
+    isNewUser: bool

@@ -1,4 +1,3 @@
-import ast
 from sqlalchemy.orm import Session
 
 from databases.user import getGoogleUser, getUser
@@ -19,10 +18,6 @@ async def checkUser(db: Session, user: User, userId: int) -> UserORM | None:
 async def checkGoogleLoginUser(db: Session, user: GoogleUser) -> GoogleUserORM | None:
     u = await getGoogleUser(db, user.email)
     if u is None:
-        return None
-    if sorted(ast.literal_eval(u.scopes)) != sorted(ast.literal_eval(user.scopes)):
-        return None
-    if u.serverAuthCode != user.serverAuthCode:
         return None
     return u
 

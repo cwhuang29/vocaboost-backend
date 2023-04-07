@@ -59,6 +59,7 @@ def formatDefaultSetting(userId: int) -> Setting:
         showDetail=DEFAULT_SETTING['showDetail'],
         collectedWords=DEFAULT_SETTING['collectedWords'],
         suspendedPages=DEFAULT_SETTING['suspendedPages'],
+        updatedAt=DEFAULT_SETTING['updatedAt'],
     )
 
 
