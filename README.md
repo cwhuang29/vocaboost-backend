@@ -1,6 +1,6 @@
-# vocabulary-highlighter-backend
+# VocaBoost - Backend
 
-Backend server for browser extension and app of vocabulary-highlighter.
+Backend server for [browser extension](https://github.com/cwhuang29/vocaboost-ext) and [mobile app](https://github.com/cwhuang29/vocaboost-app) of VocaBoost.
 
 ## Commands
 
