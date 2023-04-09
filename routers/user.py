@@ -2,7 +2,7 @@ from fastapi import Depends, APIRouter, WebSocket
 from sqlalchemy.orm import Session
 
 from databases.setup import getDB
-from handlers.user import getUserSetting, getDisplayUserByTokenData, updateUserSetting, updateUserSettingWS
+from handlers.user import getUserSetting, getDisplayUserByTokenData, updateUserCollectedWordsWS, updateUserSetting, updateUserSettingWS
 from routers.dependency import tokenDataDep, dbUserDep
 from structs.schemas.setting import Setting, UpdateSettingOut
 from utils.enum import RouterGroupType
@@ -32,3 +32,8 @@ async def updateSetting(setting: Setting, dbUser: dbUserDep, db: Session = Depen
 @router.websocket('/setting')
 async def updateSettingWebSocket(websocket: WebSocket, db: Session = Depends(getDB)) -> None:
     await updateUserSettingWS(websocket, db)
+
+
+@router.websocket('/setting/collected-words')
+async def updateCollectedWordsWebSocket(websocket: WebSocket, db: Session = Depends(getDB)) -> None:
+    await updateUserCollectedWordsWS(websocket, db)

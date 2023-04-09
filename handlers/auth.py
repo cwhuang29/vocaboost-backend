@@ -35,7 +35,7 @@ def verifyAppLogin(reqLogin: ReqLogin, user, oauthToken):
 
 def getAppLoginUser(reqLogin: ReqLogin) -> LoginOut:
     oauthToken = getOAuthToken(reqLogin.loginMethod, reqLogin.idToken)
-    user = parseLoginPayload(reqLogin, oauthToken.accountId)
+    user = parseLoginPayload(reqLogin, oauthToken.sub)
     verifyAppLogin(reqLogin, user, oauthToken)
     return user
 

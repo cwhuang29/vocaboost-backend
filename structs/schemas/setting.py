@@ -12,7 +12,7 @@ class Setting(BaseModel):
     showDetail: bool
     collectedWords: List[int]
     suspendedPages: List[str]
-    updatedAt: Optional[datetime] = None
+    updatedAt: datetime = None
 
     class Config:
         orm_mode = True
@@ -20,5 +20,12 @@ class Setting(BaseModel):
 
 class UpdateSettingOut(BaseModel):
     data: Optional[Setting] = None
+    isStale: Optional[bool] = None
+    error: Optional[str] = None
+
+
+class UpdateCollectedWordsOut(BaseModel):
+    data: Optional[List[int]] = None
+    ts: Optional[datetime] = None
     isStale: Optional[bool] = None
     error: Optional[str] = None

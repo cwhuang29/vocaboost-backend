@@ -4,7 +4,7 @@ from structs.models.setting import SettingORM
 from structs.schemas.setting import Setting
 
 
-def getSettingORM(setting: Setting, updatedAt: datetime | None = None) -> SettingORM:
+def getSettingORM(setting: Setting) -> SettingORM:
     return SettingORM(
         userId=setting.userId,
         highlightColor=setting.highlightColor,
@@ -13,5 +13,5 @@ def getSettingORM(setting: Setting, updatedAt: datetime | None = None) -> Settin
         showDetail=1 if setting.showDetail else 0,
         collectedWords=str(setting.collectedWords),
         suspendedPages=str(setting.suspendedPages),
-        updatedAt=updatedAt
+        updatedAt=setting.updatedAt or datetime.utcnow()
     )
