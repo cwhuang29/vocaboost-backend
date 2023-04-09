@@ -8,14 +8,14 @@ from utils.enum import ClientSourceType, AuthHistoryType, LoginMethodType
 def getGoogleUserORM(user: GoogleUser, id: int) -> GoogleUserORM:
     return GoogleUserORM(
         userId=id,
+        accountId=user.accountId,
         email=user.email,
         scopes=user.scopes,
-        serverAuthCode=user.serverAuthCode,
         avatar=user.avatar,
     )
 
 
-def getDetailedUserORM(user: User, id: int):
+def getDetailedUserORM(user, id: int):
     dbDetailedUser = None
     if user.loginMethod == LoginMethodType.GOOGLE:
         dbDetailedUser = getGoogleUserORM(user, id)

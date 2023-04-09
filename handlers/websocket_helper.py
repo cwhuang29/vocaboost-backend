@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from databases.user import getUserByUUID
 from handlers.auth_helper import decodeAccessToken
-from handlers.formatter import formatSettingFromWS
+from formatter.setting import formatSettingFromWS
 
 from structs.schemas.auth import TokenData
 from structs.schemas.setting import Setting

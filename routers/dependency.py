@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from handlers.auth import getDbUserByTokenData, getTokenData, tryToGetTokenData
+from handlers.dependency import getDbUserByTokenData, getTokenData, tryToGetTokenData
 from handlers.header import getSourceHeader
 from structs.models.user import UserORM
 from structs.schemas.auth import TokenData

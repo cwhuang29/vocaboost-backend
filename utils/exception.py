@@ -1,36 +1,21 @@
-class AuthException(Exception):
-    pass
+from fastapi import HTTPException, status
+
+from utils.message import ERROR_MSG, getErrMsg, getShouldLoginMsg
 
 
-class WordException(Exception):
-    pass
+HTTP_CREDENTIALS_EXCEPTION = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail=getShouldLoginMsg(),
+    headers={'WWW-Authenticate': 'Bearer'},
+)
+
+HTTP_PAYLOAD_MALFORMED_EXCEPTION = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail=getErrMsg(errHead=ERROR_MSG.PAYLOAD_INCORRECT, errBody=ERROR_MSG.TRY_AGAIN),
+)
 
 
-class UserDoesNotExistError(AuthException):
-    def __init__(self):
-        self.status_code = 400
-        self.detail = 'This user does not exist'
-
-
-class UserAlreadyExistError(AuthException):
-    def __init__(self):
-        self.status_code = 409
-        self.detail = 'This user already exists'
-
-
-class LoginMethodError(AuthException):
-    def __init__(self):
-        self.status_code = 400
-        self.detail = 'The login method is not supported yet'
-
-
-class ManageWordActionError(WordException):
-    def __init__(self):
-        self.status_code = 400
-        self.detail = 'The action should be either add or remove'
-
-
-class WordNotFoundError(WordException):
-    def __init__(self):
-        self.status_code = 400
-        self.detail = 'This word does not exist'
+HTTP_SERVER_EXCEPTION = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail=getErrMsg(errHead=ERROR_MSG.UNEXPECTED_ERR, errBody=ERROR_MSG.TRY_AGAIN),
+)

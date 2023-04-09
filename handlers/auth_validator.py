@@ -1,39 +1,20 @@
-from sqlalchemy.orm import Session
-
-from databases.user import getGoogleUser, getUser
-from structs.models.user import GoogleUserORM, UserORM
-from structs.schemas.user import GoogleUser, User
+from structs.schemas.oauth import GoogleOAuthToken
+from structs.schemas.user import GoogleUser
 from utils.enum import LoginMethodType
+from utils.message import ERROR_MSG
 
 
-async def checkUser(db: Session, user: User, userId: int) -> UserORM | None:
-    u = await getUser(db, userId)
-    if u is None:
-        return None
-    if LoginMethodType(u.method) != user.loginMethod:
-        return None
-    return u
+def verifyGoogleLoginPayload(oauthToken: GoogleOAuthToken, user: GoogleUser):
+    # if oauthToken.firstName != user.firstName:
+    #     raise ValueError(ERROR_MSG.PAYLOAD_INCORRECT)
+    # if oauthToken.lastName != user.lastName:
+    #     raise ValueError(ERROR_MSG.PAYLOAD_INCORRECT)
+    if oauthToken.email != user.email:
+        raise ValueError(ERROR_MSG.PAYLOAD_INCORRECT)
 
 
-async def checkGoogleLoginUser(db: Session, user: GoogleUser) -> GoogleUserORM | None:
-    u = await getGoogleUser(db, user.email)
-    if u is None:
-        return None
-    return u
-
-
-async def checkDetailedLoginUser(db: Session, user: User):
-    dbDetailedUser = None
+def verifyLoginPayload(oauthToken, user):
     if user.loginMethod == LoginMethodType.GOOGLE:
-        dbDetailedUser = await checkGoogleLoginUser(db, user)
-    return dbDetailedUser
-
-
-async def checkLoginPayload(db: Session, user: User) -> tuple[UserORM, GoogleUserORM] | tuple[None, None]:
-    dbDetailedUser = await checkDetailedLoginUser(db, user)
-    if dbDetailedUser is None:
-        return None, None
-    dbUser = await checkUser(db, user, dbDetailedUser.userId)
-    if dbUser is None:
-        return None, None
-    return dbUser, dbDetailedUser
+        verifyGoogleLoginPayload(oauthToken, user)
+    else:
+        raise ValueError(ERROR_MSG.LOGIN_NOT_SUPPORT)

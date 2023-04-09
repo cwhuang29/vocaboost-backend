@@ -21,9 +21,9 @@ class GoogleUser(User):
     loginMethod = LoginMethodType.GOOGLE
 
     userId: Optional[conint(ge=0)]
+    accountId: str
     email: EmailStr
     scopes: constr(max_length=1000)
-    serverAuthCode: Optional[constr(max_length=800)]
     avatar: constr(max_length=600)
 
     class Config:

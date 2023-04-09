@@ -4,13 +4,15 @@ from fastapi import WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
 from databases.setting import getSettingByUser
-from handlers.auth_helper import HTTPCredentialsException, getUserAndDetailedUserByTokenData
-from handlers.formatter import formatUserFromORM, formatSettingFromORM
+from handlers.auth_helper import getUserAndDetailedUserByTokenData
+from formatter.user import formatUserFromORM
+from formatter.setting import formatSettingFromORM
 from handlers.user_helper import tryUpdateUserSetting
 from handlers.websocket_helper import getWSUpdateSettingPayload
 from structs.models.user import UserORM
 from structs.schemas.auth import TokenData
 from structs.schemas.setting import Setting, UpdateSettingOut
+from utils.exception import HTTP_CREDENTIALS_EXCEPTION
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +20,7 @@ logger = logging.getLogger(__name__)
 async def getDisplayUserByTokenData(tokenData: TokenData, db: Session):
     dbUser, dbDetailedUser = await getUserAndDetailedUserByTokenData(db, tokenData)
     if dbUser is None:
-        raise HTTPCredentialsException
+        raise HTTP_CREDENTIALS_EXCEPTION
     return formatUserFromORM(dbUser, dbDetailedUser)
 
 

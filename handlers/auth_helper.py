@@ -2,36 +2,34 @@ from datetime import datetime, timedelta
 from typing import Annotated
 import uuid
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from config import JWT_SECRET_KEY, JWT_ALGO, JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 from databases.setting import createSetting
-from databases.user import createUser, getDetailedUser, getUserByUUID
-from handlers.formatter import formatDefaultSetting
+from databases.user import createUser, getDetailedUser, getGoogleUser, getUser, getUserByUUID
+from formatter.setting import formatDefaultSetting
+from formatter.user import formatGoogleUserFromReq
 from structs.models.user import GoogleUserORM, UserORM
+from structs.requests.auth import ReqLogin
 from structs.schemas.auth import Token, TokenData
 from structs.schemas.user import User
-from utils.message import getShouldLoginMsg
+from utils.enum import LoginMethodType
+from utils.exception import HTTP_CREDENTIALS_EXCEPTION
+from utils.message import ERROR_MSG
 
 oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')
 
-HTTPCredentialsException = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail=getShouldLoginMsg(),
-    headers={'WWW-Authenticate': 'Bearer'},
-)
 
-
-def createAccessToken(tokenData: TokenData, expiresDelta: timedelta | None = None) -> Token:
+def createAccessToken(uuid: str, method: int, firstName: str, lastName: str, email: str | None = '', expiresDelta: timedelta | None = None) -> Token:
     payload = {
-        'sub': tokenData.uuid,
-        'method': tokenData.method,
-        'firstName': tokenData.firstName,
-        'lastName': tokenData.lastName,
-        'email': tokenData.email,
+        'sub': uuid,
+        'method': method,
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
     }
     lifespan = expiresDelta if expiresDelta else timedelta(minutes=int(JWT_ACCESS_TOKEN_EXPIRE_MINUTES))
     expire = datetime.utcnow() + lifespan
@@ -53,21 +51,20 @@ def decodeAccessToken(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData
         email: int = payload.get('email')  # email may be None if we support different login methods in future
 
         if uuid is None or method is None:
-            raise HTTPCredentialsException
+            raise HTTP_CREDENTIALS_EXCEPTION
         tokenData = TokenData(uuid=uuid, method=method, firstName=firstName, lastName=lastName, email=email)
     except JWTError:
-        raise HTTPCredentialsException
+        raise HTTP_CREDENTIALS_EXCEPTION
     return tokenData
 
 
-def createTokenData(uuid: str, method: int, firstName: str, lastName: str, email: str | None = '') -> TokenData:
-    return TokenData(
-        uuid=uuid,
-        method=method,
-        firstName=firstName,
-        lastName=lastName,
-        email=email
-    )
+def formatDetailedUserFromReq(reqLogin: ReqLogin, accountId: str):
+    detailedUser = None
+    if reqLogin.loginMethod == LoginMethodType.GOOGLE:
+        detailedUser = formatGoogleUserFromReq(reqLogin, accountId)
+    else:
+        raise ValueError(ERROR_MSG.LOGIN_NOT_SUPPORT)
+    return detailedUser
 
 
 async def getUserAndDetailedUserByTokenData(db: Session, tokenData: TokenData) -> tuple[UserORM, GoogleUserORM]:
@@ -76,10 +73,26 @@ async def getUserAndDetailedUserByTokenData(db: Session, tokenData: TokenData) -
     return dbUser, dbDetailedUser
 
 
+async def tryToGetDetailedUserOnLogin(db: Session, user: User):
+    dbDetailedUser = None
+    if user.loginMethod == LoginMethodType.GOOGLE:
+        dbDetailedUser = await getGoogleUser(db, user.email)
+    return dbDetailedUser
+
+
+async def tryToGetUserOnLogin(db: Session, user: User) -> tuple[UserORM, GoogleUserORM] | tuple[None, None]:
+    dbDetailedUser = await tryToGetDetailedUserOnLogin(db, user)
+    if dbDetailedUser is None:
+        return None, None
+    dbUser = await getUser(db, dbDetailedUser.userId)
+    if dbUser is None:
+        return None, None
+    return dbUser, dbDetailedUser
+
+
 async def setupNewUser(db: Session, user: User) -> tuple[UserORM, GoogleUserORM]:
     user.uuid = uuid.uuid4()
     dbUser, dbDetailedUser = await createUser(db, user)
-
     setting = formatDefaultSetting(dbUser.id)
     await createSetting(db, setting)
     return dbUser, dbDetailedUser

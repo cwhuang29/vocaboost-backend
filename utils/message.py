@@ -19,12 +19,14 @@ class ERROR_MSG(str, Enum):
 
     HEADER_INVALID = 'Header verify failed'
 
+    OAUTH_TOKEN_INVALID = 'Cannot verify OAuth token'
+
     JWT_ERROR_MALFORMED = 'Token is malformed'
     JWT_ERROR_UNVERIFIABLE = 'Token could not be verified because of signing problems'
     JWT_ERROR_SIGNATURE_INVALID = 'Signature validation failed'
     JWT_ERROR_EXPIRED = 'Login session expired. You have to relogin'  # Token is expired
     JWT_ERROR_NOT_VALID_YET = 'Token is not yet valid before sometime'
-    JWT_PAYLOAD_MALFORMED = 'YOU have to relogin'
+    JWT_PAYLOAD_MALFORMED = 'You have to relogin'
     JWT_UNKNOWN = 'Can not handle this token'
 
     LOGIN_FIRST = 'You should login first'

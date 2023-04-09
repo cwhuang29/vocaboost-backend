@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from databases.setting import tryUpdateSetting
-from handlers.formatter import formatSettingFromORM
+from formatter.setting import formatSettingFromORM
 from structs.models.user import UserORM
 from structs.schemas.setting import Setting, UpdateSettingOut
 from utils.message import ERROR_MSG

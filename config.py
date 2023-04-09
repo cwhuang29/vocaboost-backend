@@ -8,3 +8,5 @@ MYSQL_DB = os.environ.get('MYSQL_DB', 'vocabulary_highlighter')
 JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', '9e283bd0313d49ca307f2fdc4b9d4ad8ae8cc63a0d14406791b2c4ce54bf860d')
 JWT_ALGO = os.environ.get('JWT_ALGO', 'HS256')
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get('JWT_ACCESS_TOKEN_EXPIRE_MINUTES', '43200')
+
+GOOGLE_LOGIN_IOS_CLIENT_ID = os.environ.get('GOOGLE_LOGIN_IOS_CLIENT_ID', '')

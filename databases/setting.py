@@ -16,7 +16,7 @@ async def tryUpdateSetting(db: Session, userId: int, setting: Setting) -> Settin
     '''
     isStale = False
     dbSetting = await getSettingByUser(db, userId)
-    if dbSetting.updatedAt.replace(tzinfo=timezone.utc) > setting.updatedAt:  # pyright: ignore[reportOptionalMemberAccess]
+    if dbSetting.updatedAt.replace(tzinfo=timezone.utc) > setting.updatedAt.replace(tzinfo=timezone.utc):  # pyright: ignore[reportOptionalMemberAccess]
         isStale = True
         return dbSetting, isStale
 

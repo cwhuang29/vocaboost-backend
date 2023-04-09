@@ -20,7 +20,7 @@ class GoogleUserORM(Base):
     __tablename__ = 'users_google'
 
     userId = Column('user_id', Integer, primary_key=True, index=True)
+    accountId = Column('account_id', String)
     scopes = Column(String)
-    serverAuthCode = Column('server_auth_code', String)
     email = Column(String)
     avatar = Column(String)

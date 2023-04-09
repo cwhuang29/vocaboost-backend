@@ -1,91 +1,90 @@
 import logging
-from typing import Annotated, Tuple
+from typing import Tuple
 
-from fastapi import Depends, HTTPException, Request
-from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from databases.setup import getDB
-from databases.user import getUserByUUID
 
-from handlers.auth_helper import HTTPCredentialsException, createTokenData, getUserAndDetailedUserByTokenData, createAccessToken, setupNewUser, decodeAccessToken
-from handlers.auth_validator import checkLoginPayload
-from handlers.formatter import formatGoogleUserFromReq
-from structs.models.user import UserORM
+from handlers.auth_helper import formatDetailedUserFromReq, getUserAndDetailedUserByTokenData, createAccessToken, setupNewUser, tryToGetUserOnLogin
+from handlers.auth_validator import verifyLoginPayload
+from handlers.oauth_validator import getOAuthToken, verifyOAuthToken
 from structs.requests.auth import ReqLogin
 from structs.schemas.auth import LoginOut, TokenData
-from structs.schemas.user import User
-from utils.enum import ClientSourceType, LoginMethodType
+from utils.enum import ClientSourceType
 from databases.auth import createLoginRecord, createLogoutRecord
-from utils.message import ERROR_MSG, getErrMsg
+from utils.exception import HTTP_CREDENTIALS_EXCEPTION, HTTP_PAYLOAD_MALFORMED_EXCEPTION, HTTP_SERVER_EXCEPTION
 
 logger = logging.getLogger(__name__)
 
-oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')  # Raise exception if token is not valid
 
-
-def getTokenData(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData:
-    return decodeAccessToken(token)
-
-
-async def getDbUserByTokenData(token: Annotated[str, Depends(oauth2Scheme)], db: Session = Depends(getDB)) -> UserORM:
-    tokenData = decodeAccessToken(token)
-    dbUser = await getUserByUUID(db, tokenData.uuid)
-    if dbUser is None:
-        raise HTTPCredentialsException
-    return dbUser
-
-
-async def tryToGetTokenData(req: Request) -> TokenData | None:
+def parseLoginPayload(reqLogin: ReqLogin, accountId: str):
     try:
-        token = await oauth2Scheme(req)
-        tokenData = decodeAccessToken(token)
-        return tokenData
-    except Exception:
-        return None
-
-
-def parseReqPayload(reqLogin: ReqLogin) -> User:
-    try:
-        user = None
-        if reqLogin.loginMethod == LoginMethodType.GOOGLE:
-            user = formatGoogleUserFromReq(reqLogin)
-        else:
-            raise HTTPException(status_code=400, detail=getErrMsg(ERROR_MSG.LOGIN_NOT_SUPPORT))
+        user = formatDetailedUserFromReq(reqLogin, accountId)
         return user
     except Exception as err:
         logger.error(str(err))
-        raise HTTPException(status_code=400, detail=getErrMsg(errHead=ERROR_MSG.TRY_AGAIN, errBody=str(err)))
+        raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
 
 
-async def authenticateLogin(user: User, tokenData: TokenData | None, db: Session) -> Tuple[TokenData, bool]:
+def verifyAppLogin(reqLogin: ReqLogin, user, oauthToken):
     try:
-        isNewUser = False
-        dbUser, dbDetailedUser = None, None
-        if tokenData:
-            # This is a valid and signed in user
-            dbUser, dbDetailedUser = await getUserAndDetailedUserByTokenData(db, tokenData)
-        else:
-            # The token might had expired, or this is a new user first time login
-            dbUser, dbDetailedUser = await checkLoginPayload(db, user)
-            if not dbUser:
-                isNewUser = True
-                dbUser, dbDetailedUser = await setupNewUser(db, user)
-        tokenData = createTokenData(dbUser.uuid, dbUser.method, dbUser.firstName, dbUser.lastName, dbDetailedUser.email)  # pyright: ignore[reportOptionalMemberAccess]
-        return tokenData, isNewUser
+        verifyOAuthToken(reqLogin.loginMethod, oauthToken)
+        verifyLoginPayload(oauthToken, user)
+    except Exception:
+        raise HTTP_CREDENTIALS_EXCEPTION
+
+
+def getAppLoginUser(reqLogin: ReqLogin) -> LoginOut:
+    oauthToken = getOAuthToken(reqLogin.loginMethod, reqLogin.idToken)
+    user = parseLoginPayload(reqLogin, oauthToken.accountId)
+    verifyAppLogin(reqLogin, user, oauthToken)
+    return user
+
+
+def getExtLoginUser(reqLogin: ReqLogin) -> LoginOut:
+    user = parseLoginPayload(reqLogin, reqLogin.accountId)
+    return user
+
+
+def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType):
+    user = None
+    if source == ClientSourceType.MOBILE:
+        user = getAppLoginUser(reqLogin)
+    if source == ClientSourceType.EXTENSION:
+        user = getExtLoginUser(reqLogin)
+    assert user is not None
+    return user
+
+
+async def createUserIfNotExist(user, db: Session) -> Tuple[TokenData, bool]:
+    try:
+        dbUser, dbDetailedUser = await tryToGetUserOnLogin(db, user)
+        if not dbUser:
+            dbUser, dbDetailedUser = await setupNewUser(db, user)
+        return dbUser, dbDetailedUser
     except IntegrityError as err:  # e.g., email is not unique
-        raise HTTPException(status_code=400, detail=getErrMsg(errHead=ERROR_MSG.TRY_AGAIN, errBody=err._message()))
+        logger.error(str(err))
+        raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
     except Exception as err:
         logger.error(err)
-        raise HTTPException(status_code=500)
+        raise HTTP_SERVER_EXCEPTION
 
 
-async def handleLogin(reqLogin: ReqLogin, tokenData: TokenData | None, source: ClientSourceType, db: Session) -> LoginOut:
-    user = parseReqPayload(reqLogin)
-    tokenData, isNewUser = await authenticateLogin(user, tokenData, db)
+async def loadUserFromDB(user, tokenData: TokenData | None, db: Session):
+    isNewUser = tokenData is not None
+    if tokenData:
+        # This is a valid and already signed in user
+        dbUser, dbDetailedUser = await getUserAndDetailedUserByTokenData(db, tokenData)
+    else:
+        # Auth token might had expired, or this is a new user first time login
+        dbUser, dbDetailedUser = await createUserIfNotExist(user, db)
+    return dbUser, dbDetailedUser, isNewUser
 
-    await createLoginRecord(db, tokenData.uuid, source)
-    token = createAccessToken(tokenData)
+
+async def handleLogin(reqLogin: ReqLogin, tokenData: TokenData | None, source: ClientSourceType, db: Session):
+    user = getLoginUser(reqLogin, source)
+    dbUser, dbDetailedUser, isNewUser = await loadUserFromDB(user, tokenData, db)
+    await createLoginRecord(db, dbUser.uuid, source)
+    token = createAccessToken(dbUser.uuid, dbUser.method, dbUser.firstName, dbUser.lastName, dbDetailedUser.email, tokenData)
     return LoginOut(token=token, isNewUser=isNewUser)
 
 
