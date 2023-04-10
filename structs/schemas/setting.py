@@ -6,12 +6,12 @@ from pydantic import BaseModel, conint, constr
 
 class Setting(BaseModel):
     userId: Optional[conint(ge=0)]
-    highlightColor: constr(max_length=20)
+    highlightColor: Optional[constr(max_length=20)]
     language: constr(max_length=20)
     fontSize: constr(max_length=20)
-    showDetail: bool
+    showDetail: Optional[bool]
     collectedWords: List[int]
-    suspendedPages: List[str]
+    suspendedPages: Optional[List[str]]
     updatedAt: datetime = None
 
     class Config:
