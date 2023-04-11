@@ -50,7 +50,7 @@ Get JWT secret key by `openssl rand -hex 32`, output looks like `9e283bd0313d49c
     ```bash
       # -H 'Authorization: Bearer ${jwt}' \
     curl -X 'POST' \
-      'http://localhost:8000/login' \
+      'http://localhost:8000/v1/login' \
       -H 'X-VH-Source: mobile' \
       -H 'accept: application/json' \
       -H 'Content-Type: application/json' \
@@ -81,7 +81,7 @@ Get JWT secret key by `openssl rand -hex 32`, output looks like `9e283bd0313d49c
     # Logout
     jwt=<accessToken from response>
     curl -X 'POST' \
-      'http://localhost:8000/logout' \
+      'http://localhost:8000/v1/logout' \
       -H 'accept: application/json' \
     	-H 'X-VH-Source: mobile' \
       -H "Authorization: Bearer ${jwt}"
@@ -94,7 +94,7 @@ Get JWT secret key by `openssl rand -hex 32`, output looks like `9e283bd0313d49c
     ```bash
     jwt=<accessToken from response>
     curl -X 'GET' \
-      'http://localhost:8000/users/me' \
+      'http://localhost:8000/v1/users/me' \
       -H 'accept: application/json' \
     	-H 'X-VH-Source: mobile' \
       -H "Authorization: Bearer ${jwt}"

@@ -13,5 +13,5 @@ def getSettingORM(setting: Setting) -> SettingORM:
         showDetail=1 if setting.showDetail else 0,
         collectedWords=str(setting.collectedWords),
         suspendedPages=str(setting.suspendedPages),
-        updatedAt=setting.updatedAt or datetime.utcnow()
+        updatedAt=setting.updatedAt or datetime.utcnow()  # Otherwise DB may create timestamp with timezone info
     )

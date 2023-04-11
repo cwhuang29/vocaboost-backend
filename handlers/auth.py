@@ -34,9 +34,12 @@ def verifyAppLogin(reqLogin: ReqLogin, user, oauthToken):
 
 
 def getAppLoginUser(reqLogin: ReqLogin) -> LoginOut:
-    oauthToken = getOAuthToken(reqLogin.loginMethod, reqLogin.idToken)
-    user = parseLoginPayload(reqLogin, oauthToken.sub)
-    verifyAppLogin(reqLogin, user, oauthToken)
+    try:
+        oauthToken = getOAuthToken(reqLogin.loginMethod, reqLogin.idToken)
+        user = parseLoginPayload(reqLogin, oauthToken.sub)
+        verifyAppLogin(reqLogin, user, oauthToken)
+    except Exception:
+        raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
     return user
 
 
@@ -72,10 +75,10 @@ async def createUserIfNotExist(user, db: Session) -> Tuple[TokenData, bool]:
 async def loadUserFromDB(user, tokenData: TokenData | None, db: Session):
     isNewUser = tokenData is not None
     if tokenData:
-        # This is a valid and already signed in user
+        # This is a valid and signed in user
         dbUser, dbDetailedUser = await getUserAndDetailedUserByTokenData(db, tokenData)
     else:
-        # Auth token might had expired, or this is a new user first time login
+        # This is a new user or old user whose auth token had expired
         dbUser, dbDetailedUser = await createUserIfNotExist(user, db)
     return dbUser, dbDetailedUser, isNewUser
 

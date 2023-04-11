@@ -3,13 +3,15 @@ import logging
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import FileResponse
 
 from routers import auth, user, word
+from utils.constant import FAVICON_PATH
 from utils.logger import parseRequestLogFormat
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None)
 
 app.include_router(prefix='/v1', router=auth.router)
 app.include_router(prefix='/v1', router=user.router)
@@ -23,7 +25,6 @@ app.add_middleware(
     max_age=1800,
     allow_methods=['GET', 'POST', 'PUT', 'OPTIONS'],
     allow_headers=['Accept', 'Authorization', 'Content-Type', 'Content-Length', 'Accept-Encoding', 'X-CSRF-Token', 'X-VH-Source'],
-    # expose_headers=['Access-Control-Allow-Origin']
 )
 
 
@@ -37,6 +38,11 @@ async def add_process_time_header(req: Request, call_next):
     return response
 
 
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse(FAVICON_PATH)
+
+
 @app.get('/')
 def read_root():
-    return {'Hello': 'This is the backend server of Vocabulary Highlighter'}
+    return {'Hello': 'This is the backend server of VocaBoost'}

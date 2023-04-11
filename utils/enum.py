@@ -36,7 +36,7 @@ class RouterGroupType(str, Enum):
     WORD = 'words'
 
 
-class HIGHLIGHTER_FONT_SIZE(str, Enum):
+class FONT_SIZE(str, Enum):
     SMALL = 'SMALL'
     MEDIUM = 'MEDIUM'
     LARGE = 'LARGE'

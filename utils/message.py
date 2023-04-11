@@ -19,6 +19,7 @@ class ERROR_MSG(str, Enum):
 
     HEADER_INVALID = 'Header verify failed'
 
+    OAUTH_TOKEN_MALFORMED = 'OAuth token is malformed'
     OAUTH_TOKEN_INVALID = 'Cannot verify OAuth token'
 
     JWT_ERROR_MALFORMED = 'Token is malformed'

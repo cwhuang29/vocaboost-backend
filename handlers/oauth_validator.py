@@ -10,8 +10,11 @@ from utils.message import ERROR_MSG
 
 
 def getOAuthGoogleToken(idToken):
-    idInfo = id_token.verify_oauth2_token(idToken, requests.Request(), GOOGLE_LOGIN_IOS_CLIENT_ID)
-    oauthToken = formatGoogleOauthToken(idInfo)
+    try:
+        idInfo = id_token.verify_oauth2_token(idToken, requests.Request(), GOOGLE_LOGIN_IOS_CLIENT_ID)
+        oauthToken = formatGoogleOauthToken(idInfo)
+    except Exception:
+        raise ValueError(ERROR_MSG.OAUTH_TOKEN_MALFORMED)
     return oauthToken
 
 
