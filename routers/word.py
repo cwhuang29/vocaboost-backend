@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 
 from databases.setup import getDB
 from handlers.header import verifyHeader
-from routers.dependency import dbUserDep
 from handlers.word import getUserCollectedWords
+from routers.dependency import dbUserDep
 
 from utils.enum import RouterGroupType
 

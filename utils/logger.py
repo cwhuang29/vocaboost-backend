@@ -1,10 +1,14 @@
 from datetime import datetime
+import logging
 import time
 
-from fastapi import Request
+from fastapi import Request, Response
+
+logger = logging.getLogger(__name__)
 
 
-def parseRequestLogFormat(req: Request, process_time: time):
+def showRequestStat(req: Request, resp: Response, process_time: time):
+    statusCode = resp.status_code
     method = req.method
     url = req.url
     clientHost = req.client.host
@@ -13,4 +17,6 @@ def parseRequestLogFormat(req: Request, process_time: time):
     query_params = req.query_params
     headers = req.headers
     # cookies = req.cookies
-    return f'Time: {datetime.utcnow()}. Method: {method}. Client IP: {clientHost}. Client Port: {clientPort}. URL: {url}. Path params: {path_params}. Query params: {query_params}, Headers: {headers}. Time spent: {process_time}'
+
+    s = f'Time: {datetime.utcnow()}. Status Code: {statusCode}. Method: {method}. URL: {url}. Client IP: {clientHost}. Client Port: {clientPort}. Path params: {path_params}. Query params: {query_params}, Headers: {headers}. Time spent: {process_time}'
+    logger.warning(s)
