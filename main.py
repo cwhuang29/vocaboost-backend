@@ -17,7 +17,8 @@ app = FastAPI(docs_url=None, redoc_url=None)
 app.include_router(prefix='/v1', router=auth.router)
 app.include_router(prefix='/v1', router=user.router)
 app.include_router(prefix='/v1', router=word.router)
-app.mount("/privacy-policy", StaticFiles(directory="privacy-policy", html=True), name="privacy-policy")
+app.mount('/support', StaticFiles(directory='static/support', html=True), name='support')
+app.mount('/privacy-policy', StaticFiles(directory='static/privacy-policy', html=True), name='privacy-policy')
 
 
 app.add_middleware(
