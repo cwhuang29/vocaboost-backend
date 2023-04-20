@@ -87,7 +87,7 @@ async def handleLogin(reqLogin: ReqLogin, tokenData: TokenData | None, source: C
     user = getLoginUser(reqLogin, source)
     dbUser, dbDetailedUser, isNewUser = await loadUserFromDB(user, tokenData, db)
     await createLoginRecord(db, dbUser.uuid, source)
-    token = createAccessToken(dbUser.uuid, dbUser.method, dbUser.firstName, dbUser.lastName, dbDetailedUser.email, tokenData)
+    token = createAccessToken(dbUser.uuid, dbUser.method, dbUser.firstName, dbUser.lastName, dbDetailedUser.email)
     return LoginOut(token=token, isNewUser=isNewUser)
 
 
