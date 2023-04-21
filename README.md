@@ -1,11 +1,16 @@
 # VocaBoost - Backend
 
-Backend server for [browser extension](https://github.com/cwhuang29/vocaboost-ext) and [mobile app](https://github.com/cwhuang29/vocaboost-app) of VocaBoost.
+VocabularyBoost (VocaBoost) helps you improve GRE vocabulary in an effective way.
+
+View VocaBoost official website on [here](https://www.vocabularyboost.com/).
+
+Install VocaBoost extension on [Chrome Web Store](https://chrome.google.com/webstore/detail/gre-vocabulary-highlighte/gfkmbmplhjdoejicgmaldndkcnnpplho).
+
+Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id6447704480).
 
 ## Commands
 
 - Run the server: `uvicorn main:app --reload`
-    - See API documents at `http://127.0.0.1:8000/docs` and `http://127.0.0.1:8000/redoc`
 
 ## Setup
 
@@ -44,11 +49,8 @@ Get JWT secret key by `openssl rand -hex 32`, output looks like `9e283bd0313d49c
 ### API Examples
 
 - Login
-    - JWT token is valid: ignore payload and renew token
-    - JWT token is not valid or missing: validate payload, create a new user if not exist, then issue a token
 
     ```bash
-      # -H 'Authorization: Bearer ${jwt}' \
     curl -X 'POST' \
       'http://localhost:8000/v1/login' \
       -H 'X-VH-Source: mobile' \
