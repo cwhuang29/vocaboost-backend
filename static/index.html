@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,26 +24,31 @@
       display: flex;
       flex-direction: column;
     }
+
     .slide-icon {
       background-color: #49505726;
       border-radius: 18px;
       background-size: 75% 75%;
       filter: brightness(0) saturate(100%);
     }
+
     .section {
       margin-top: 36px;
     }
+
     footer {
       margin-top: auto;
       width: 100%;
       padding: 10px 45px 8px 45px;
       background-color: #EEEEEE;
     }
+
   </style>
   <script>
     const {['log']: c} = console;
   </script>
 </head>
+
 <body>
   <nav class="navbar" style="background-color: #9ED19B;">
     <div class="container-fluid">
@@ -68,28 +74,44 @@
       <div class="section">
         <div style="display: flex; justify-content: flex-start; align-items: flex-end;">
           <h1 class="display-6">VocaBoost App</h1>
-          <p style="margin: 0 8px 13px 18px;">Install at&nbsp;&nbsp;<a href="https://apps.apple.com/app/vocabboost/id6447704480" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">App Store</a></p>
+          <p style="margin: 0 8px 13px 18px;">Install at&nbsp;&nbsp;<a
+              href="https://apps.apple.com/app/vocabboost/id6447704480"
+              class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">App
+              Store</a></p>
         </div>
-        <p>VocaBoost is designed to help non-native English speakers improve their language skills and prepare for the GRE exam. With over 1500 of the most commonly used GRE vocabulary and phrases, VocaBoost is an essential tool for anyone looking to boost their English proficiency.</p>
-        <p>Available in English, Chinese, and Spanish, VocaBoost allows you to review vocabulary in your preferred language.</p>
+        <p>VocaBoost is designed to help non-native English speakers improve their language skills and prepare for the
+          GRE exam. With over 1500 of the most commonly used GRE vocabulary and phrases, VocaBoost is an essential tool
+          for anyone looking to boost their English proficiency.</p>
+        <p>Available in English, Chinese, and Spanish, VocaBoost allows you to review vocabulary in your preferred
+          language.</p>
       </div>
       <div class="section">
         <div style="display: flex; justify-content: flex-start; align-items: flex-end;">
           <h1 class="display-6">VocaBoost Extension</h1>
-          <p style="margin: 0 8px 13px 18px;">Install at&nbsp;&nbsp;<a href="https://chrome.google.com/webstore/detail/vocaboost-gre-vocabulary/gfkmbmplhjdoejicgmaldndkcnnpplho" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Chrome Web Store</a></p>
+          <p style="margin: 0 8px 13px 18px;">Install at&nbsp;&nbsp;<a
+              href="https://chrome.google.com/webstore/detail/vocaboost-gre-vocabulary/gfkmbmplhjdoejicgmaldndkcnnpplho"
+              class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Chrome Web
+              Store</a></p>
         </div>
-        <p>VocaBoost also offers a handy browser extension that highlights 1500 GRE words on every web page you visit. When you hover mouse over a highlighted word, a popup window appears with its definition, examples, and a link to an online dictionary for further reference.</p>
-        <p>If you come across an unfamiliar word, simply add it to your list and review it later on our app or by clicking the icon in browser toolbar.</p>
-        <p>With VocaBoost, you can expand your English vocabulary and enhance your language skills no matter where you are or what you're doing.</p>
+        <p>VocaBoost also offers a handy browser extension that highlights 1500 GRE words on every web page you visit.
+          When you hover mouse over a highlighted word, a popup window appears with its definition, examples, and a link
+          to an online dictionary for further reference.</p>
+        <p>If you come across an unfamiliar word, simply add it to your list and review it later on our app or by
+          clicking the icon in browser toolbar.</p>
+        <p>With VocaBoost, you can expand your English vocabulary and enhance your language skills no matter where you
+          are or what you're doing.</p>
       </div>
       <div class="section">
         <h1 class="display-6" style="font-size: 1.8rem;">OAuth Login</h1>
-        <p>Vocaboost integrate with Google OAuth 2.0 to provide login authentication. Once you sign in, your collected words and settings will be stored safely in the database and synchronize between app and extension. This is totally optional.</p>
+        <p>Vocaboost integrate with Google OAuth 2.0 to provide login authentication. Once you sign in, your collected
+          words and settings will be stored safely in the database and synchronize between app and extension. This is
+          totally optional.</p>
       </div>
     </div>
-    <div style="width: 40%;"id="carouselIndicators" class="carousel slide" data-bs-ride="carousel">
+    <div style="width: 40%;" id="carouselIndicators" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="0" class="active"
+          aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
         <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
         <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
@@ -97,12 +119,18 @@
         <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="5" aria-label="Slide 6"></button>
       </div>
       <div class="carousel-inner">
-        <div class="carousel-item active"><img src="showcase/iphone-demo-01.png" class="d-block" height="700" alt="demo 01" style="margin: auto"/></div>
-        <div class="carousel-item"><img src="showcase/iphone-demo-02.png" class="d-block" height="700" alt="demo 02" style="margin: auto"/></div>
-        <div class="carousel-item"><img src="showcase/iphone-demo-03.png" class="d-block" height="700" alt="demo 03" style="margin: auto"/></div>
-        <div class="carousel-item"><img src="showcase/iphone-demo-04.png" class="d-block" height="700" alt="demo 04" style="margin: auto"/></div>
-        <div class="carousel-item"><img src="showcase/iphone-demo-05.png" class="d-block" height="700" alt="demo 05" style="margin: auto"/></div>
-        <div class="carousel-item"><img src="showcase/iphone-demo-06.png" class="d-block" height="700" alt="demo 06" style="margin: auto"/></div>
+        <div class="carousel-item active"><img src="showcase/iphone-demo-01.png" class="d-block" height="700"
+            alt="demo 01" style="margin: auto" /></div>
+        <div class="carousel-item"><img src="showcase/iphone-demo-02.png" class="d-block" height="700" alt="demo 02"
+            style="margin: auto" /></div>
+        <div class="carousel-item"><img src="showcase/iphone-demo-03.png" class="d-block" height="700" alt="demo 03"
+            style="margin: auto" /></div>
+        <div class="carousel-item"><img src="showcase/iphone-demo-04.png" class="d-block" height="700" alt="demo 04"
+            style="margin: auto" /></div>
+        <div class="carousel-item"><img src="showcase/iphone-demo-05.png" class="d-block" height="700" alt="demo 05"
+            style="margin: auto" /></div>
+        <div class="carousel-item"><img src="showcase/iphone-demo-06.png" class="d-block" height="700" alt="demo 06"
+            style="margin: auto" /></div>
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators" data-bs-slide="prev">
         <span class="carousel-control-prev-icon slide-icon" aria-hidden="true" />
@@ -120,13 +148,14 @@
       <small>VocabularyBoost (VocaBoost)</small>
       <small>Authors: Chen Wei (Jimmy) Huang, Yun Chi Pang</small>
     </p>
-    <hr style="margin: 0.35rem 0"/>
+    <hr style="margin: 0.35rem 0" />
     <p style="margin-bottom: 0.2rem; color: #494949; display: flex;">
       <small>Copyright © 2023 VocabularyBoost (VocaBoost). All rights reserved.</small>
       <small style="margin: 0 10px;">|</small>
       <small><a class="nav-link" target="_blank" rel="noopener noreferrer" href="./support.html">Support</a></small>
       <small style="margin: 0 10px;">|</small>
-      <small><a class="nav-link" target="_blank" rel="noopener noreferrer" href="./privacy-policy.html">Privacy Policy</a></small>
+      <small><a class="nav-link" target="_blank" rel="noopener noreferrer" href="./privacy-policy.html">Privacy
+          Policy</a></small>
     </p>
   </footer>
 
