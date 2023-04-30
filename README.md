@@ -8,9 +8,14 @@ Install VocaBoost extension on [Chrome Web Store](https://chrome.google.com/webs
 
 Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id6447704480).
 
+## System Architecture
+
+![System Architecture](demo/vocaboost-system-architecture.jpg)
+
 ## Commands
 
-- Run the server: `uvicorn main:app --reload`
+- Run the server (dev): `uvicorn main:app --reload`
+- Run the server (prod): `nohup uvicorn main:app --host 0.0.0.0 --port <port> --workers <num_workers> --log-level critical &> ~/server.out &`
 
 ## Setup
 
@@ -24,6 +29,18 @@ Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id644
     ```
 
 2. Check `config.py` and setup all necessary env variables
+    
+    ```bash
+    export MYSQL_HOST=127.0.0.1:3306
+    export MYSQL_DB=vocaboost
+    export MYSQL_USER=vocaboost
+    export MYSQL_PASSWORD=
+
+    jwt=`openssl rand -hex 32`
+    export JWT_SECRET_KEY=$jwt
+    export JWT_ACCESS_TOKEN_EXPIRE_MINUTES=
+    export GOOGLE_LOGIN_IOS_CLIENT_ID=
+    ```
 
 ## Structure
 
