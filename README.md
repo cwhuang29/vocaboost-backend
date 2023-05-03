@@ -25,7 +25,8 @@ Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id644
     pip3 install virtualenv
     python3 -m virtualenv venv
     source venv/bin/activate
-    pip install fastapi "uvicorn[standard]" SQLAlchemy pymysql email-validator "python-jose[cryptography]" websockets
+    pip install fastapi "uvicorn[standard]" SQLAlchemy pymysql email-validator "python-jose[cryptography]" websockets pyjwt
+    pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib # Google OAuth
     ```
 
 2. Check `config.py` and setup all necessary env variables
