@@ -13,12 +13,12 @@ from structs.models.user import UserORM
 from structs.schemas.auth import TokenData
 from structs.schemas.setting import Setting, UpdateSettingOut
 from utils.exception import HTTP_CREDENTIALS_EXCEPTION
-from utils.type import DetailedUserOutTypeAll
+from utils.type import DetailedUserOutType
 
 logger = logging.getLogger(__name__)
 
 
-async def getDisplayUserByTokenData(tokenData: TokenData, db: Session) -> DetailedUserOutTypeAll:
+async def getDisplayUserByTokenData(tokenData: TokenData, db: Session) -> DetailedUserOutType:
     dbUser, dbDetailedUser = await getUserAndDetailedUserByTokenData(db, tokenData)
     if dbUser is None:
         raise HTTP_CREDENTIALS_EXCEPTION

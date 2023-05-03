@@ -3,7 +3,7 @@ from structs.models.auth import AuthHistoryORM
 from structs.models.user import AzureUserORM, GoogleUserORM, UserORM
 from structs.schemas.user import AzureUser, GoogleUser, User
 from utils.enum import ClientSourceType, AuthHistoryType, LoginMethodType
-from utils.type import DetailedUserTypeAll
+from utils.type import DetailedUserType
 
 
 def getGoogleUserORM(user: GoogleUser, id: int) -> GoogleUserORM:
@@ -26,7 +26,7 @@ def getAzureUserORM(user: AzureUser, id: int) -> AzureUserORM:
     )
 
 
-def getDetailedUserORM(user: DetailedUserTypeAll, id: int):
+def getDetailedUserORM(user: DetailedUserType, id: int):
     dbDetailedUser = None
     if user.loginMethod == LoginMethodType.GOOGLE:
         dbDetailedUser = getGoogleUserORM(user, id)

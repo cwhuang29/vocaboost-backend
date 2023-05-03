@@ -1,7 +1,7 @@
 from structs.schemas.oauth import AzureOAuthToken, GoogleOAuthToken
 
 
-def formatGoogleOauthToken(idInfo) -> GoogleOAuthToken:
+def formatGoogleOAuthToken(idInfo) -> GoogleOAuthToken:
     return GoogleOAuthToken(
         iss=idInfo['iss'],
         aud=idInfo['aud'],
@@ -14,7 +14,7 @@ def formatGoogleOauthToken(idInfo) -> GoogleOAuthToken:
     )
 
 
-def formatAzureOauthToken(idInfo) -> AzureOAuthToken:
+def formatAzureOAuthToken(idInfo) -> AzureOAuthToken:
     return AzureOAuthToken(
         ver=idInfo['ver'],
         iss=idInfo['iss'],

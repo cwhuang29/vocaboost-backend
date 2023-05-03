@@ -18,7 +18,7 @@ from structs.schemas.auth import Token, TokenData
 from structs.schemas.user import User
 from utils.enum import LoginMethodType
 from utils.exception import HTTP_CREDENTIALS_EXCEPTION
-from utils.type import DetailedUserORMTypeAll, DetailedUserTypeAll
+from utils.type import DetailedUserORMType, DetailedUserType
 
 oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')
 
@@ -58,7 +58,7 @@ def decodeAccessToken(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData
     return tokenData
 
 
-def formatDetailedUserFromReq(reqLogin: ReqLogin, accountId: str) -> DetailedUserTypeAll:
+def formatDetailedUserFromReq(reqLogin: ReqLogin, accountId: str) -> DetailedUserType:
     detailedUser = None
     if reqLogin.loginMethod == LoginMethodType.GOOGLE:
         detailedUser = formatGoogleUserFromReq(reqLogin, accountId)
@@ -67,13 +67,13 @@ def formatDetailedUserFromReq(reqLogin: ReqLogin, accountId: str) -> DetailedUse
     return detailedUser
 
 
-async def getUserAndDetailedUserByTokenData(db: Session, tokenData: TokenData) -> tuple[UserORM, DetailedUserORMTypeAll]:
+async def getUserAndDetailedUserByTokenData(db: Session, tokenData: TokenData) -> tuple[UserORM, DetailedUserORMType]:
     dbUser = await getUserByUUID(db, uuid.UUID(tokenData.uuid))
     dbDetailedUser = await getDetailedUser(db, tokenData.method, dbUser.id)  # pyright: ignore[reportOptionalMemberAccess]
     return dbUser, dbDetailedUser
 
 
-async def tryToGetDetailedUserOnLogin(db: Session, user: User) -> DetailedUserORMTypeAll | None:
+async def tryToGetDetailedUserOnLogin(db: Session, user: User) -> DetailedUserORMType | None:
     dbDetailedUser = None
     if user.loginMethod == LoginMethodType.GOOGLE:
         dbDetailedUser = await getGoogleUser(db, user.email)
@@ -82,7 +82,7 @@ async def tryToGetDetailedUserOnLogin(db: Session, user: User) -> DetailedUserOR
     return dbDetailedUser
 
 
-async def tryToGetUserOnLogin(db: Session, user: DetailedUserTypeAll) -> tuple[UserORM, DetailedUserORMTypeAll] | tuple[None, None]:
+async def tryToGetUserOnLogin(db: Session, user: DetailedUserType) -> tuple[UserORM, DetailedUserORMType] | tuple[None, None]:
     dbDetailedUser = await tryToGetDetailedUserOnLogin(db, user)
     if dbDetailedUser is None:
         return None, None
@@ -92,7 +92,7 @@ async def tryToGetUserOnLogin(db: Session, user: DetailedUserTypeAll) -> tuple[U
     return dbUser, dbDetailedUser
 
 
-async def setupNewUser(db: Session, user: DetailedUserTypeAll) -> tuple[UserORM, DetailedUserORMTypeAll]:
+async def setupNewUser(db: Session, user: DetailedUserType) -> tuple[UserORM, DetailedUserORMType]:
     user.uuid = uuid.uuid4()
     dbUser, dbDetailedUser = await createUser(db, user)
     setting = formatDefaultSetting(dbUser.id)

@@ -1,12 +1,6 @@
 from enum import Enum
 
 
-class ClientSourceType(int, Enum):
-    MOBILE = 0
-    EXTENSION = 1
-    UNKNOWN = 2
-
-
 class AuthHistoryType(int, Enum):
     SIGNEDIN = 0
     SIGNEDOUT = 1
@@ -25,7 +19,13 @@ class ManageWordType(int, Enum):
     REMOVE = 1
 
 
-class CLIENT_SOURCE(str, Enum):
+class ClientSourceType(int, Enum):
+    MOBILE = 0
+    EXTENSION = 1
+    UNKNOWN = 2
+
+
+class ClientSourceHeaderType(str, Enum):
     MOBILE = 'mobile'
     EXTENSION = 'extension'
     UNKNOWN = 'unknown'

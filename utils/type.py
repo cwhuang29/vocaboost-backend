@@ -5,10 +5,10 @@ from structs.schemas.oauth import AzureOAuthToken, GoogleOAuthToken
 from structs.schemas.user import AzureUser, AzureUserOut, GoogleUser, GoogleUserOut
 
 
-OauthTokenTypeAll = Union[GoogleOAuthToken, AzureOAuthToken]
+OAuthTokenType = Union[GoogleOAuthToken, AzureOAuthToken]
 
-DetailedUserTypeAll = Union[GoogleUser, AzureUser]
+DetailedUserType = Union[GoogleUser, AzureUser]
 
-DetailedUserOutTypeAll = Union[GoogleUserOut, AzureUserOut]
+DetailedUserOutType = Union[GoogleUserOut, AzureUserOut]
 
-DetailedUserORMTypeAll = Union[GoogleUserORM, AzureUserORM]
+DetailedUserORMType = Union[GoogleUserORM, AzureUserORM]

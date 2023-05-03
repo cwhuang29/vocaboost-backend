@@ -2,7 +2,7 @@ from structs.models.user import AzureUserORM, GoogleUserORM, UserORM
 from structs.requests.auth import ReqLogin
 from structs.schemas.user import AzureUser, AzureUserOut, GoogleUser, GoogleUserOut, User
 from utils.enum import LoginMethodType
-from utils.type import DetailedUserOutTypeAll
+from utils.type import DetailedUserOutType
 
 
 def formatDisplayGoogleUserFromORM(dbUser: UserORM, dbDetailedUser: GoogleUserORM) -> GoogleUserOut:
@@ -27,7 +27,7 @@ def formatDisplayAzureUserFromORM(dbUser: UserORM, dbDetailedUser: AzureUserORM)
     )
 
 
-def formatDisplayUserFromORM(dbUser: UserORM, dbDetailedUser) -> DetailedUserOutTypeAll:
+def formatDisplayUserFromORM(dbUser: UserORM, dbDetailedUser) -> DetailedUserOutType:
     user = None
     if LoginMethodType(dbUser.method) == LoginMethodType.GOOGLE:
         user = formatDisplayGoogleUserFromORM(dbUser, dbDetailedUser)

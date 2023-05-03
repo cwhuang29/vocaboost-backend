@@ -1,24 +1,25 @@
 from datetime import datetime
 import logging
-from typing import Tuple
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from handlers.auth_helper import formatDetailedUserFromReq, getUserAndDetailedUserByTokenData, createAccessToken, setupNewUser, tryToGetUserOnLogin
 from handlers.auth_validator import verifyLoginPayload
-from handlers.oauth import getOAuthToken, getUserIdentifierFromOauthJWT, verifyLoginMethod, verifyOAuthToken
+from handlers.oauth import getOAuthToken, getUserIdentifierFromOAuthJWT, verifyLoginMethod
+from handlers.oauth_validator import verifyOAuthToken
+from structs.models.user import UserORM
 from structs.requests.auth import ReqLogin
 from structs.schemas.auth import LoginOut, TokenData
 from utils.enum import ClientSourceType
 from databases.auth import createLoginRecord, createLogoutRecord
 from utils.exception import HTTP_CREDENTIALS_EXCEPTION, HTTP_PAYLOAD_MALFORMED_EXCEPTION, HTTP_SERVER_EXCEPTION
-from utils.type import DetailedUserTypeAll
+from utils.type import DetailedUserORMType, DetailedUserType
 
 logger = logging.getLogger(__name__)
 
 
-def parseLoginPayload(reqLogin: ReqLogin, accountId: str) -> DetailedUserTypeAll:
+def parseLoginPayload(reqLogin: ReqLogin, accountId: str) -> DetailedUserType:
     try:
         user = formatDetailedUserFromReq(reqLogin, accountId)
         return user
@@ -36,10 +37,10 @@ def verifyAppLogin(reqLogin: ReqLogin, user, oauthToken) -> None:
         raise HTTP_CREDENTIALS_EXCEPTION
 
 
-def getAppLoginUser(reqLogin: ReqLogin) -> DetailedUserTypeAll:
+def getAppLoginUser(reqLogin: ReqLogin) -> DetailedUserType:
     try:
         oauthToken = getOAuthToken(reqLogin.loginMethod, reqLogin.idToken)
-        accountId = getUserIdentifierFromOauthJWT(reqLogin.loginMethod, oauthToken)
+        accountId = getUserIdentifierFromOAuthJWT(reqLogin.loginMethod, oauthToken)
         user = parseLoginPayload(reqLogin, accountId)
         verifyAppLogin(reqLogin, user, oauthToken)
     except Exception:
@@ -47,12 +48,12 @@ def getAppLoginUser(reqLogin: ReqLogin) -> DetailedUserTypeAll:
     return user
 
 
-def getExtLoginUser(reqLogin: ReqLogin) -> DetailedUserTypeAll:
+def getExtLoginUser(reqLogin: ReqLogin) -> DetailedUserType:
     user = parseLoginPayload(reqLogin, reqLogin.accountId)
     return user
 
 
-def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType) -> DetailedUserTypeAll:
+def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType) -> DetailedUserType:
     user = None
     if source == ClientSourceType.MOBILE:
         user = getAppLoginUser(reqLogin)
@@ -62,12 +63,16 @@ def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType) -> DetailedUserTy
     return user
 
 
-async def createUserIfNotExist(user: DetailedUserTypeAll, db: Session) -> Tuple[TokenData, bool]:
+async def createUserIfNotExist(user: DetailedUserType, db: Session) -> tuple[UserORM, DetailedUserORMType, bool]:
+    isNewUser = False
     try:
         dbUser, dbDetailedUser = await tryToGetUserOnLogin(db, user)
         if not dbUser:
+            isNewUser = True
             dbUser, dbDetailedUser = await setupNewUser(db, user)
-        return dbUser, dbDetailedUser
+        assert dbUser is not None
+        assert dbDetailedUser is not None
+        return dbUser, dbDetailedUser, isNewUser
     except IntegrityError as err:  # e.g., email is not unique
         logger.error(str(err))
         raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
@@ -76,14 +81,14 @@ async def createUserIfNotExist(user: DetailedUserTypeAll, db: Session) -> Tuple[
         raise HTTP_SERVER_EXCEPTION
 
 
-async def loadUserFromDB(user: DetailedUserTypeAll, tokenData: TokenData | None, db: Session):
-    isNewUser = tokenData is not None
+async def loadUserFromDB(user: DetailedUserType, tokenData: TokenData | None, db: Session) -> tuple[UserORM, DetailedUserORMType, bool]:
+    isNewUser = False
     if tokenData:
         # This is a valid and signed in user
         dbUser, dbDetailedUser = await getUserAndDetailedUserByTokenData(db, tokenData)
     else:
         # This is a new user or old user whose auth token had expired
-        dbUser, dbDetailedUser = await createUserIfNotExist(user, db)
+        dbUser, dbDetailedUser, isNewUser = await createUserIfNotExist(user, db)
     return dbUser, dbDetailedUser, isNewUser
 
 

@@ -43,7 +43,7 @@ async def favicon():
 
 
 @app.get('/.well-known/microsoft-identity-association.json')
-def microsoftOauthVerify():
+def microsoftOAuthVerify():
     content = {"associatedApplications": [{"applicationId": "2d22f996-9c5c-476a-9f40-50a95f34f600"}]}
     return JSONResponse(content=content)
 

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from databases.auth_helper import getDetailedUserORM, getUserORM
 from structs.models.user import AzureUserORM, GoogleUserORM, UserORM
 from utils.enum import LoginMethodType
-from utils.type import DetailedUserORMTypeAll, DetailedUserTypeAll
+from utils.type import DetailedUserORMType, DetailedUserType
 
 
 async def getUser(db: Session, id: int):
@@ -39,7 +39,7 @@ async def getUsers(db: Session, skip: int = 0, limit: int = 100):
     return db.query(UserORM).order_by(UserORM.id.asc()).offset(skip).limit(limit).all()
 
 
-async def createUser(db: Session, user: DetailedUserTypeAll) -> tuple[UserORM, DetailedUserORMTypeAll]:
+async def createUser(db: Session, user: DetailedUserType) -> tuple[UserORM, DetailedUserORMType]:
     dbUser = getUserORM(user)
     db.add(dbUser)
     db.flush()  # Without this, the dbUser.id would not match in two tables
