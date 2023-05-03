@@ -42,6 +42,8 @@ def getErrMsg(errHead=ERROR_MSG.UNEXPECTED_ERR, errBody='') -> dict:
 
 getUnexpectedErrMsg = partial(getErrMsg, ERROR_MSG.UNEXPECTED_ERR, ERROR_MSG.TRY_AGAIN)
 
+getLoginNotSupportMsg = partial(getErrMsg, ERROR_MSG.LOGIN_NOT_SUPPORT)
+
 getNoSourceHeaderMsg = partial(getErrMsg, ERROR_MSG.HEADER_INVALID)
 
 getShouldLoginMsg = partial(getErrMsg, ERROR_MSG.PERMISSION_DENIED, ERROR_MSG.LOGIN_FIRST)

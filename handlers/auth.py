@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from typing import Tuple
 
@@ -6,17 +7,18 @@ from sqlalchemy.orm import Session
 
 from handlers.auth_helper import formatDetailedUserFromReq, getUserAndDetailedUserByTokenData, createAccessToken, setupNewUser, tryToGetUserOnLogin
 from handlers.auth_validator import verifyLoginPayload
-from handlers.oauth_validator import getOAuthToken, verifyOAuthToken
+from handlers.oauth import getOAuthToken, getUserIdentifierFromOauthJWT, verifyLoginMethod, verifyOAuthToken
 from structs.requests.auth import ReqLogin
 from structs.schemas.auth import LoginOut, TokenData
 from utils.enum import ClientSourceType
 from databases.auth import createLoginRecord, createLogoutRecord
 from utils.exception import HTTP_CREDENTIALS_EXCEPTION, HTTP_PAYLOAD_MALFORMED_EXCEPTION, HTTP_SERVER_EXCEPTION
+from utils.type import DetailedUserTypeAll
 
 logger = logging.getLogger(__name__)
 
 
-def parseLoginPayload(reqLogin: ReqLogin, accountId: str):
+def parseLoginPayload(reqLogin: ReqLogin, accountId: str) -> DetailedUserTypeAll:
     try:
         user = formatDetailedUserFromReq(reqLogin, accountId)
         return user
@@ -25,30 +27,32 @@ def parseLoginPayload(reqLogin: ReqLogin, accountId: str):
         raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
 
 
-def verifyAppLogin(reqLogin: ReqLogin, user, oauthToken):
+def verifyAppLogin(reqLogin: ReqLogin, user, oauthToken) -> None:
     try:
+        verifyLoginMethod(reqLogin.loginMethod)
         verifyOAuthToken(reqLogin.loginMethod, oauthToken)
         verifyLoginPayload(oauthToken, user)
     except Exception:
         raise HTTP_CREDENTIALS_EXCEPTION
 
 
-def getAppLoginUser(reqLogin: ReqLogin) -> LoginOut:
+def getAppLoginUser(reqLogin: ReqLogin) -> DetailedUserTypeAll:
     try:
         oauthToken = getOAuthToken(reqLogin.loginMethod, reqLogin.idToken)
-        user = parseLoginPayload(reqLogin, oauthToken.sub)
+        accountId = getUserIdentifierFromOauthJWT(reqLogin.loginMethod, oauthToken)
+        user = parseLoginPayload(reqLogin, accountId)
         verifyAppLogin(reqLogin, user, oauthToken)
     except Exception:
         raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
     return user
 
 
-def getExtLoginUser(reqLogin: ReqLogin) -> LoginOut:
+def getExtLoginUser(reqLogin: ReqLogin) -> DetailedUserTypeAll:
     user = parseLoginPayload(reqLogin, reqLogin.accountId)
     return user
 
 
-def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType):
+def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType) -> DetailedUserTypeAll:
     user = None
     if source == ClientSourceType.MOBILE:
         user = getAppLoginUser(reqLogin)
@@ -58,7 +62,7 @@ def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType):
     return user
 
 
-async def createUserIfNotExist(user, db: Session) -> Tuple[TokenData, bool]:
+async def createUserIfNotExist(user: DetailedUserTypeAll, db: Session) -> Tuple[TokenData, bool]:
     try:
         dbUser, dbDetailedUser = await tryToGetUserOnLogin(db, user)
         if not dbUser:
@@ -72,7 +76,7 @@ async def createUserIfNotExist(user, db: Session) -> Tuple[TokenData, bool]:
         raise HTTP_SERVER_EXCEPTION
 
 
-async def loadUserFromDB(user, tokenData: TokenData | None, db: Session):
+async def loadUserFromDB(user: DetailedUserTypeAll, tokenData: TokenData | None, db: Session):
     isNewUser = tokenData is not None
     if tokenData:
         # This is a valid and signed in user
@@ -84,6 +88,7 @@ async def loadUserFromDB(user, tokenData: TokenData | None, db: Session):
 
 
 async def handleLogin(reqLogin: ReqLogin, tokenData: TokenData | None, source: ClientSourceType, db: Session):
+    reqLogin.timeStamp = datetime.utcnow()
     user = getLoginUser(reqLogin, source)
     dbUser, dbDetailedUser, isNewUser = await loadUserFromDB(user, tokenData, db)
     await createLoginRecord(db, dbUser.uuid, source)

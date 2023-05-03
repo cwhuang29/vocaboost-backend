@@ -17,6 +17,7 @@ class LoginMethodType(int, Enum):
     GOOGLE = 1
     APPLE = 2
     TWITTER = 3
+    AZURE = 4
 
 
 class ManageWordType(int, Enum):

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import Column, DateTime, Integer, String, Text
 from sqlalchemy.sql import func
 
 from databases.setup import Base
@@ -24,3 +24,13 @@ class GoogleUserORM(Base):
     scopes = Column(String)
     email = Column(String)
     avatar = Column(String)
+
+
+class AzureUserORM(Base):
+    __tablename__ = 'users_azure'
+
+    userId = Column('user_id', Integer, primary_key=True, index=True)
+    accountId = Column('account_id', String)
+    scopes = Column(String)
+    email = Column(String)
+    avatar = Column(Text)  # Base64 encoding string

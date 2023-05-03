@@ -1,4 +1,4 @@
-from structs.schemas.oauth import GoogleOAuthToken
+from structs.schemas.oauth import AzureOAuthToken, GoogleOAuthToken
 
 
 def formatGoogleOauthToken(idInfo) -> GoogleOAuthToken:
@@ -11,4 +11,18 @@ def formatGoogleOauthToken(idInfo) -> GoogleOAuthToken:
         lastName=idInfo['family_name'],
         avatar=idInfo['picture'],
         exp=idInfo['exp'],
+    )
+
+
+def formatAzureOauthToken(idInfo) -> AzureOAuthToken:
+    return AzureOAuthToken(
+        ver=idInfo['ver'],
+        iss=idInfo['iss'],
+        sub=idInfo['sub'],
+        aud=idInfo['aud'],
+        exp=idInfo['exp'],
+        oid=idInfo['oid'],
+        email=idInfo['email'],
+        firstName=idInfo['given_name'],
+        lastName=idInfo['family_name'],
     )

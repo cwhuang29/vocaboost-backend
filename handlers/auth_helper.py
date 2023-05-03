@@ -9,16 +9,16 @@ from sqlalchemy.orm import Session
 
 from config import JWT_SECRET_KEY, JWT_ALGO, JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 from databases.setting import createSetting
-from databases.user import createUser, getDetailedUser, getGoogleUser, getUser, getUserByUUID
+from databases.user import createUser, getAzureUser, getDetailedUser, getGoogleUser, getUser, getUserByUUID
 from formatter.setting import formatDefaultSetting
-from formatter.user import formatGoogleUserFromReq
-from structs.models.user import GoogleUserORM, UserORM
+from formatter.user import formatAzureUserFromReq, formatGoogleUserFromReq
+from structs.models.user import UserORM
 from structs.requests.auth import ReqLogin
 from structs.schemas.auth import Token, TokenData
 from structs.schemas.user import User
 from utils.enum import LoginMethodType
 from utils.exception import HTTP_CREDENTIALS_EXCEPTION
-from utils.message import ERROR_MSG
+from utils.type import DetailedUserORMTypeAll, DetailedUserTypeAll
 
 oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')
 
@@ -58,29 +58,31 @@ def decodeAccessToken(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData
     return tokenData
 
 
-def formatDetailedUserFromReq(reqLogin: ReqLogin, accountId: str):
+def formatDetailedUserFromReq(reqLogin: ReqLogin, accountId: str) -> DetailedUserTypeAll:
     detailedUser = None
     if reqLogin.loginMethod == LoginMethodType.GOOGLE:
         detailedUser = formatGoogleUserFromReq(reqLogin, accountId)
-    else:
-        raise ValueError(ERROR_MSG.LOGIN_NOT_SUPPORT)
+    if reqLogin.loginMethod == LoginMethodType.AZURE:
+        detailedUser = formatAzureUserFromReq(reqLogin, accountId)
     return detailedUser
 
 
-async def getUserAndDetailedUserByTokenData(db: Session, tokenData: TokenData) -> tuple[UserORM, GoogleUserORM]:
+async def getUserAndDetailedUserByTokenData(db: Session, tokenData: TokenData) -> tuple[UserORM, DetailedUserORMTypeAll]:
     dbUser = await getUserByUUID(db, uuid.UUID(tokenData.uuid))
     dbDetailedUser = await getDetailedUser(db, tokenData.method, dbUser.id)  # pyright: ignore[reportOptionalMemberAccess]
     return dbUser, dbDetailedUser
 
 
-async def tryToGetDetailedUserOnLogin(db: Session, user: User):
+async def tryToGetDetailedUserOnLogin(db: Session, user: User) -> DetailedUserORMTypeAll | None:
     dbDetailedUser = None
     if user.loginMethod == LoginMethodType.GOOGLE:
         dbDetailedUser = await getGoogleUser(db, user.email)
+    if user.loginMethod == LoginMethodType.AZURE:
+        dbDetailedUser = await getAzureUser(db, user.email)
     return dbDetailedUser
 
 
-async def tryToGetUserOnLogin(db: Session, user: User) -> tuple[UserORM, GoogleUserORM] | tuple[None, None]:
+async def tryToGetUserOnLogin(db: Session, user: DetailedUserTypeAll) -> tuple[UserORM, DetailedUserORMTypeAll] | tuple[None, None]:
     dbDetailedUser = await tryToGetDetailedUserOnLogin(db, user)
     if dbDetailedUser is None:
         return None, None
@@ -90,7 +92,7 @@ async def tryToGetUserOnLogin(db: Session, user: User) -> tuple[UserORM, GoogleU
     return dbUser, dbDetailedUser
 
 
-async def setupNewUser(db: Session, user: User) -> tuple[UserORM, GoogleUserORM]:
+async def setupNewUser(db: Session, user: DetailedUserTypeAll) -> tuple[UserORM, DetailedUserORMTypeAll]:
     user.uuid = uuid.uuid4()
     dbUser, dbDetailedUser = await createUser(db, user)
     setting = formatDefaultSetting(dbUser.id)

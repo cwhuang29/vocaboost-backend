@@ -1,10 +1,11 @@
-from structs.models.user import GoogleUserORM, UserORM
+from structs.models.user import AzureUserORM, GoogleUserORM, UserORM
 from structs.requests.auth import ReqLogin
-from structs.schemas.user import GoogleUser, GoogleUserOut, User
+from structs.schemas.user import AzureUser, AzureUserOut, GoogleUser, GoogleUserOut, User
 from utils.enum import LoginMethodType
+from utils.type import DetailedUserOutTypeAll
 
 
-def formatGoogleUserFromORM(dbUser: UserORM, dbDetailedUser: GoogleUserORM) -> GoogleUserOut:
+def formatDisplayGoogleUserFromORM(dbUser: UserORM, dbDetailedUser: GoogleUserORM) -> GoogleUserOut:
     return GoogleUserOut(
         uuid=dbUser.uuid,
         firstName=dbUser.firstName,
@@ -15,10 +16,23 @@ def formatGoogleUserFromORM(dbUser: UserORM, dbDetailedUser: GoogleUserORM) -> G
     )
 
 
-def formatUserFromORM(dbUser: UserORM, dbDetailedUser):
+def formatDisplayAzureUserFromORM(dbUser: UserORM, dbDetailedUser: AzureUserORM) -> AzureUserOut:
+    return AzureUserOut(
+        uuid=dbUser.uuid,
+        firstName=dbUser.firstName,
+        lastName=dbUser.lastName,
+        createdAt=dbUser.createdAt,
+        email=dbDetailedUser.email,
+        avatar=dbDetailedUser.avatar,
+    )
+
+
+def formatDisplayUserFromORM(dbUser: UserORM, dbDetailedUser) -> DetailedUserOutTypeAll:
     user = None
     if LoginMethodType(dbUser.method) == LoginMethodType.GOOGLE:
-        user = formatGoogleUserFromORM(dbUser, dbDetailedUser)
+        user = formatDisplayGoogleUserFromORM(dbUser, dbDetailedUser)
+    if LoginMethodType(dbUser.method) == LoginMethodType.AZURE:
+        user = formatDisplayAzureUserFromORM(dbUser, dbDetailedUser)
     return user
 
 
@@ -33,12 +47,25 @@ def formatUserFromReq(reqLogin: ReqLogin) -> User:
 
 def formatGoogleUserFromReq(reqLogin: ReqLogin, accountId: str) -> GoogleUser:
     return GoogleUser(
+        accountId=accountId,
         loginMethod=reqLogin.loginMethod,
         firstName=reqLogin.detail.firstName,
         lastName=reqLogin.detail.lastName,
-        createdAt=reqLogin.timeStamp,
-        accountId=accountId,
         email=reqLogin.detail.email,
         scopes=reqLogin.detail.scopes,
         avatar=reqLogin.detail.avatar,
+        createdAt=reqLogin.timeStamp,
+    )
+
+
+def formatAzureUserFromReq(reqLogin: ReqLogin, accountId: str) -> AzureUser:
+    return AzureUser(
+        accountId=accountId,
+        loginMethod=reqLogin.loginMethod,
+        firstName=reqLogin.detail.firstName,
+        lastName=reqLogin.detail.lastName,
+        email=reqLogin.detail.email,
+        scopes=reqLogin.detail.scopes,
+        avatar=reqLogin.detail.avatar,
+        createdAt=reqLogin.timeStamp,
     )

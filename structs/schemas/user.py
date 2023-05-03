@@ -19,9 +19,8 @@ class User(BaseModel):
 
 class GoogleUser(User):
     loginMethod = LoginMethodType.GOOGLE
-
     userId: Optional[conint(ge=0)]
-    accountId: str
+    accountId: str  # Uniquely identify a google account
     email: EmailStr
     scopes: constr(max_length=1000)
     avatar: constr(max_length=600)
@@ -30,6 +29,19 @@ class GoogleUser(User):
         orm_mode = True
 
 
+class AzureUser(User):
+    loginMethod = LoginMethodType.AZURE
+    userId: Optional[conint(ge=0)]
+    accountId: str  # Uniquely identify a microsoft account
+    email: EmailStr
+    scopes: constr(max_length=1000)
+    avatar: str  # Base64 encoding string
+
+    class Config:
+        orm_mode = True
+
+
+# Contain only values that should be displayed on the client
 class UserOut(BaseModel):
     uuid: Optional[UUID4]
     loginMethod: LoginMethodType
@@ -41,9 +53,13 @@ class UserOut(BaseModel):
         orm_mode = True
 
 
-# Contain only values that should be displayed on the client
 class GoogleUserOut(UserOut):
     loginMethod = LoginMethodType.GOOGLE
-
     email: EmailStr
     avatar: constr(max_length=600)
+
+
+class AzureUserOut(UserOut):
+    loginMethod = LoginMethodType.AZURE
+    email: EmailStr
+    avatar: str

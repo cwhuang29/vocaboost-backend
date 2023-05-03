@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from databases.setting import getSettingByUser
 from handlers.auth_helper import getUserAndDetailedUserByTokenData
-from formatter.user import formatUserFromORM
+from formatter.user import formatDisplayUserFromORM
 from formatter.setting import formatSettingFromORM
 from handlers.user_helper import tryUpdateUserCollectedWords, tryUpdateUserSetting
 from handlers.websocket_helper import getWSUpdateCollectedWordsPayload, getWSUpdateSettingPayload
@@ -13,15 +13,16 @@ from structs.models.user import UserORM
 from structs.schemas.auth import TokenData
 from structs.schemas.setting import Setting, UpdateSettingOut
 from utils.exception import HTTP_CREDENTIALS_EXCEPTION
+from utils.type import DetailedUserOutTypeAll
 
 logger = logging.getLogger(__name__)
 
 
-async def getDisplayUserByTokenData(tokenData: TokenData, db: Session):
+async def getDisplayUserByTokenData(tokenData: TokenData, db: Session) -> DetailedUserOutTypeAll:
     dbUser, dbDetailedUser = await getUserAndDetailedUserByTokenData(db, tokenData)
     if dbUser is None:
         raise HTTP_CREDENTIALS_EXCEPTION
-    return formatUserFromORM(dbUser, dbDetailedUser)
+    return formatDisplayUserFromORM(dbUser, dbDetailedUser)
 
 
 async def getUserSetting(dbUser: UserORM, db: Session) -> Setting:

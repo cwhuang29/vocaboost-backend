@@ -1,8 +1,9 @@
 from datetime import datetime
 from structs.models.auth import AuthHistoryORM
-from structs.models.user import GoogleUserORM, UserORM
-from structs.schemas.user import GoogleUser, User
+from structs.models.user import AzureUserORM, GoogleUserORM, UserORM
+from structs.schemas.user import AzureUser, GoogleUser, User
 from utils.enum import ClientSourceType, AuthHistoryType, LoginMethodType
+from utils.type import DetailedUserTypeAll
 
 
 def getGoogleUserORM(user: GoogleUser, id: int) -> GoogleUserORM:
@@ -15,10 +16,22 @@ def getGoogleUserORM(user: GoogleUser, id: int) -> GoogleUserORM:
     )
 
 
-def getDetailedUserORM(user, id: int):
+def getAzureUserORM(user: AzureUser, id: int) -> AzureUserORM:
+    return AzureUserORM(
+        userId=id,
+        accountId=user.accountId,
+        email=user.email,
+        scopes=user.scopes,
+        avatar=user.avatar,
+    )
+
+
+def getDetailedUserORM(user: DetailedUserTypeAll, id: int):
     dbDetailedUser = None
     if user.loginMethod == LoginMethodType.GOOGLE:
         dbDetailedUser = getGoogleUserORM(user, id)
+    if user.loginMethod == LoginMethodType.AZURE:
+        dbDetailedUser = getAzureUserORM(user, id)
     return dbDetailedUser
 
 

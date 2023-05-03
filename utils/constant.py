@@ -2,6 +2,10 @@ FAVICON_PATH = 'assets/favicon.ico'
 
 OAUTH_GOOGLE_ISS = ['accounts.google.com', 'https://accounts.google.com']
 
+OAUTH_AZURE_ISS = 'https://login.microsoftonline.com'
+
+OAUTH_AZURE_VER = '2.0'
+
 CORS = {
     'HOSTS': ['*.vocabularyboost.com'],
     'METHODS': ['GET', 'POST', 'PUT', 'OPTIONS'],
