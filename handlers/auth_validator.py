@@ -2,6 +2,12 @@ from structs.schemas.oauth import AzureOAuthToken, GoogleOAuthToken
 from structs.schemas.user import AzureUser, GoogleUser
 from utils.enum import LoginMethodType
 from utils.message import ERROR_MSG
+from utils.oauth import isSupportLoginType
+
+
+def verifyLoginMethod(loginMethod: LoginMethodType):
+    if not isSupportLoginType(loginMethod):
+        raise ValueError(ERROR_MSG.LOGIN_NOT_SUPPORT)
 
 
 def verifyGoogleLoginPayload(oauthToken: GoogleOAuthToken, user: GoogleUser):

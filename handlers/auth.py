@@ -5,8 +5,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from handlers.auth_helper import formatDetailedUserFromReq, getUserAndDetailedUserByTokenData, createAccessToken, setupNewUser, tryToGetUserOnLogin
-from handlers.auth_validator import verifyLoginPayload
-from handlers.oauth import getOAuthToken, getUserIdentifierFromOAuthJWT, verifyLoginMethod
+from handlers.auth_validator import verifyLoginMethod, verifyLoginPayload
+from handlers.oauth import getOAuthToken, getUserIdentifierFromOAuthJWT
 from handlers.oauth_validator import verifyOAuthToken
 from structs.models.user import UserORM
 from structs.requests.auth import ReqLogin

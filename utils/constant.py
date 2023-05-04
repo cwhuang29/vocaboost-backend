@@ -4,6 +4,8 @@ OAUTH_GOOGLE_ISS = ['accounts.google.com', 'https://accounts.google.com']
 
 OAUTH_AZURE_ISS = 'https://login.microsoftonline.com'
 
+OAUTH_AZURE_JWKS_URI = 'https://login.microsoftonline.com/common/discovery/v2.0/keys'
+
 OAUTH_AZURE_VER = '2.0'
 
 CORS = {
