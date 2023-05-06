@@ -9,7 +9,7 @@ OAUTH_AZURE_JWKS_URI = 'https://login.microsoftonline.com/common/discovery/v2.0/
 OAUTH_AZURE_VER = '2.0'
 
 CORS = {
-    'HOSTS': ['*.vocabularyboost.com'],
+    'HOSTS': ['*'],  # Extension's content script initiates requests on every webpage
     'METHODS': ['GET', 'POST', 'PUT', 'OPTIONS'],
     'HEADERS': ['Accept', 'Authorization', 'Content-Type', 'Content-Length', 'Accept-Encoding', 'X-CSRF-Token', 'X-VH-Source'],
 }

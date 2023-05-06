@@ -18,8 +18,21 @@ class Setting(BaseModel):
         orm_mode = True
 
 
+class SettingOut(BaseModel):
+    highlightColor: Optional[constr(max_length=20)]
+    language: constr(max_length=20)
+    fontSize: constr(max_length=20)
+    showDetail: Optional[bool]
+    collectedWords: List[int]
+    suspendedPages: Optional[List[str]]
+    updatedAt: datetime = None
+
+    class Config:
+        orm_mode = True
+
+
 class UpdateSettingOut(BaseModel):
-    data: Optional[Setting] = None
+    data: Optional[SettingOut] = None
     isStale: Optional[bool] = None
     error: Optional[str] = None
 

@@ -34,6 +34,8 @@ async def tryUpdateSetting(db: Session, userId: int, setting: Setting) -> Tuple[
         return dbSetting, True
 
     for key, value in setting.dict(exclude_unset=True).items():
+        if key == 'userId':
+            continue
         if isinstance(value, list):
             value = str(value)
         setattr(dbSetting, key, value)
