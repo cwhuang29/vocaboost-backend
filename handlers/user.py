@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 async def getDisplayUserByTokenData(tokenData: TokenData, db: Session) -> DetailedUserOutType:
     dbUser, dbDetailedUser = await getUserAndDetailedUserByTokenData(db, tokenData)
     if dbUser is None:
+        logger.exception('Error: cannot load user from database')
         raise HTTP_CREDENTIALS_EXCEPTION
     return formatDisplayUserFromORM(dbUser, dbDetailedUser)
 

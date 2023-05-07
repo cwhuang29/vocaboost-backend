@@ -1,15 +1,19 @@
 from typing import Annotated
+import logging
 
 from fastapi import HTTPException, Header
 
 from utils.enum import ClientSourceHeaderType, ClientSourceType
 from utils.message import getNoSourceHeaderMsg
 
+logger = logging.getLogger(__name__)
+
 
 def verifyHeader(x_vh_source: Annotated[str, Header()]):
     try:
         _ = ClientSourceHeaderType(x_vh_source)
-    except Exception:
+    except Exception as err:
+        logger.exception(err)
         raise HTTPException(status_code=400, detail=getNoSourceHeaderMsg())
 
 

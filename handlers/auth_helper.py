@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import logging
 from typing import Annotated
 import uuid
 
@@ -19,6 +20,8 @@ from structs.schemas.user import User
 from utils.enum import LoginMethodType
 from utils.exception import HTTP_CREDENTIALS_EXCEPTION
 from utils.type import DetailedUserORMType, DetailedUserType
+
+logger = logging.getLogger(__name__)
 
 oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')
 
@@ -51,9 +54,11 @@ def decodeAccessToken(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData
         email: int = payload.get('email')  # email may be None if we support different login methods in future
 
         if uuid is None or method is None:
+            logger.exception('Error: JWT token malformed')
             raise HTTP_CREDENTIALS_EXCEPTION
         tokenData = TokenData(uuid=uuid, method=method, firstName=firstName, lastName=lastName, email=email)
-    except JWTError:
+    except JWTError as err:
+        logger.exception(err)
         raise HTTP_CREDENTIALS_EXCEPTION
     return tokenData
 

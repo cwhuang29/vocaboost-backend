@@ -24,7 +24,7 @@ def parseLoginPayload(reqLogin: ReqLogin, accountId: str) -> DetailedUserType:
         user = formatDetailedUserFromReq(reqLogin, accountId)
         return user
     except Exception as err:
-        logger.error(str(err))
+        logger.exception(err)
         raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
 
 
@@ -33,7 +33,8 @@ def verifyAppLogin(reqLogin: ReqLogin, user, oauthToken) -> None:
         verifyLoginMethod(reqLogin.loginMethod)
         verifyOAuthToken(reqLogin.loginMethod, oauthToken)
         verifyLoginPayload(oauthToken, user)
-    except Exception:
+    except Exception as err:
+        logger.exception(err)
         raise HTTP_CREDENTIALS_EXCEPTION
 
 
@@ -43,7 +44,8 @@ def getAppLoginUser(reqLogin: ReqLogin) -> DetailedUserType:
         accountId = getUserIdentifierFromOAuthJWT(reqLogin.loginMethod, oauthToken)
         user = parseLoginPayload(reqLogin, accountId)
         verifyAppLogin(reqLogin, user, oauthToken)
-    except Exception:
+    except Exception as err:
+        logger.exception(err)
         raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
     return user
 
@@ -74,10 +76,10 @@ async def createUserIfNotExist(user: DetailedUserType, db: Session) -> tuple[Use
         assert dbDetailedUser is not None
         return dbUser, dbDetailedUser, isNewUser
     except IntegrityError as err:  # e.g., email is not unique
-        logger.error(str(err))
+        logger.exception(err)
         raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
     except Exception as err:
-        logger.error(err)
+        logger.exception(err)
         raise HTTP_SERVER_EXCEPTION
 
 
