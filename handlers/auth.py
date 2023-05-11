@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from handlers.auth_helper import formatDetailedUserFromReq, getUserAndDetailedUserByTokenData, createAccessToken, setupNewUser, tryToGetUserOnLogin
 from handlers.auth_validator import verifyLoginMethod, verifyLoginPayload
-from handlers.oauth import getOAuthToken, getUserIdentifierFromOAuthJWT
+from handlers.oauth import getOAuthToken, getUserIdentifierFromIDToken
 from handlers.oauth_validator import verifyOAuthToken
 from structs.models.user import UserORM
 from structs.requests.auth import ReqLogin
@@ -28,7 +28,7 @@ def parseLoginPayload(reqLogin: ReqLogin, accountId: str) -> DetailedUserType:
         raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
 
 
-def verifyAppLogin(reqLogin: ReqLogin, user, oauthToken) -> None:
+def verifyLogin(reqLogin: ReqLogin, user, oauthToken) -> None:
     try:
         verifyLoginMethod(reqLogin.loginMethod)
         verifyOAuthToken(reqLogin.loginMethod, oauthToken)
@@ -38,31 +38,18 @@ def verifyAppLogin(reqLogin: ReqLogin, user, oauthToken) -> None:
         raise HTTP_CREDENTIALS_EXCEPTION
 
 
-def getAppLoginUser(reqLogin: ReqLogin) -> DetailedUserType:
+def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType) -> DetailedUserType:
     try:
-        oauthToken = getOAuthToken(reqLogin.loginMethod, reqLogin.idToken)
-        accountId = getUserIdentifierFromOAuthJWT(reqLogin.loginMethod, oauthToken)
+        oauthToken = getOAuthToken(reqLogin.loginMethod, source, reqLogin.idToken)
+        assert oauthToken is not None
+        accountId = getUserIdentifierFromIDToken(reqLogin.loginMethod, oauthToken)
         user = parseLoginPayload(reqLogin, accountId)
-        verifyAppLogin(reqLogin, user, oauthToken)
+        assert user is not None
+        verifyLogin(reqLogin, user, oauthToken)
+        return user
     except Exception as err:
         logger.exception(err)
         raise HTTP_PAYLOAD_MALFORMED_EXCEPTION
-    return user
-
-
-def getExtLoginUser(reqLogin: ReqLogin) -> DetailedUserType:
-    user = parseLoginPayload(reqLogin, reqLogin.accountId)
-    return user
-
-
-def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType) -> DetailedUserType:
-    user = None
-    if source == ClientSourceType.MOBILE:
-        user = getAppLoginUser(reqLogin)
-    if source == ClientSourceType.EXTENSION:
-        user = getExtLoginUser(reqLogin)
-    assert user is not None
-    return user
 
 
 async def createUserIfNotExist(user: DetailedUserType, db: Session) -> tuple[UserORM, DetailedUserORMType, bool]:

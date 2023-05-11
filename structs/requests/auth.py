@@ -16,7 +16,6 @@ class ReqLoginDetail(BaseModel):
 
 class ReqLogin(BaseModel):
     loginMethod: LoginMethodType
-    idToken: Optional[str]   # App login
-    accountId: Optional[str]  # Ext login
+    idToken: str
     detail: ReqLoginDetail
     timeStamp: Optional[datetime]

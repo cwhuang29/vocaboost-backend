@@ -18,10 +18,10 @@ class GoogleOAuthToken(BaseModel):
 class AzureOAuthToken(BaseModel):
     ver: str = None
     iss: str = None
-    sub: str = None
+    sub: str = None  # Uniquely identify an user
     aud: str = None
     exp: int = None
-    oid: str = None  # Used to dentify an user.
+    oid: str = None  # Uniquely identify an user
     email: str = None
     firstName: str = None
     lastName: str = None

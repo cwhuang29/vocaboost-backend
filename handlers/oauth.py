@@ -3,11 +3,11 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 import jwt as pyJWT
 
-from config import AZURE_ISSUER, AZURE_LOGIN_CLIENT_ID, GOOGLE_LOGIN_IOS_CLIENT_ID
+from config import AZURE_ISSUER, AZURE_LOGIN_CLIENT_ID, GOOGLE_LOGIN_IOS_CLIENT_ID, GOOGLE_LOGIN_WEB_CLIENT_ID
 from formatter.oauth import formatAzureOAuthToken, formatGoogleOAuthToken
 from structs.schemas.oauth import AzureOAuthToken, GoogleOAuthToken
 from utils.constant import OAUTH_AZURE_JWKS_URI
-from utils.enum import LoginMethodType
+from utils.enum import ClientSourceType, LoginMethodType
 from utils.message import ERROR_MSG
 from utils.type import OAuthTokenType
 
@@ -17,7 +17,7 @@ def decodeUnverifiedJWT(token):
     return decoded
 
 
-def getUserIdentifierFromOAuthJWT(loginMethod: LoginMethodType, oauthToken: OAuthTokenType) -> str | None:
+def getUserIdentifierFromIDToken(loginMethod: LoginMethodType, oauthToken: OAuthTokenType) -> str | None:
     if loginMethod == LoginMethodType.GOOGLE:
         return oauthToken.sub
     if loginMethod == LoginMethodType.AZURE:
@@ -25,16 +25,17 @@ def getUserIdentifierFromOAuthJWT(loginMethod: LoginMethodType, oauthToken: OAut
     return None
 
 
-def getOAuthGoogleToken(idToken) -> GoogleOAuthToken:
+def decodeGoogleIDToken(idToken, source: ClientSourceType) -> GoogleOAuthToken:
     try:
-        decoded = id_token.verify_oauth2_token(idToken, requests.Request(), GOOGLE_LOGIN_IOS_CLIENT_ID)
+        audience = GOOGLE_LOGIN_WEB_CLIENT_ID if source == ClientSourceType.EXTENSION else GOOGLE_LOGIN_IOS_CLIENT_ID
+        decoded = id_token.verify_oauth2_token(idToken, requests.Request(), audience)
         oauthToken = formatGoogleOAuthToken(decoded)
     except Exception:
         raise ValueError(ERROR_MSG.OAUTH_TOKEN_MALFORMED)
     return oauthToken
 
 
-def getOAuthAzureToken(idToken) -> AzureOAuthToken:
+def decodeAzureIDToken(idToken) -> AzureOAuthToken:
     try:
         decoded = verify_jwt(
             token=idToken,
@@ -49,10 +50,16 @@ def getOAuthAzureToken(idToken) -> AzureOAuthToken:
     return oauthToken
 
 
-def getOAuthToken(loginMethod: LoginMethodType, idToken: str) -> OAuthTokenType:
+def getOAuthToken(loginMethod: LoginMethodType, source: ClientSourceType, idToken: str) -> OAuthTokenType:
     oauthToken = None
-    if loginMethod == LoginMethodType.GOOGLE:
-        oauthToken = getOAuthGoogleToken(idToken)
-    if loginMethod == LoginMethodType.AZURE:
-        oauthToken = getOAuthAzureToken(idToken)
+    if source == ClientSourceType.EXTENSION:
+        if loginMethod == LoginMethodType.GOOGLE:
+            oauthToken = decodeGoogleIDToken(idToken, source)
+        if loginMethod == LoginMethodType.AZURE:
+            oauthToken = decodeAzureIDToken(idToken)
+    else:
+        if loginMethod == LoginMethodType.GOOGLE:
+            oauthToken = decodeGoogleIDToken(idToken, source)
+        if loginMethod == LoginMethodType.AZURE:
+            oauthToken = decodeAzureIDToken(idToken)
     return oauthToken

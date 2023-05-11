@@ -40,6 +40,7 @@ Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id644
     jwt=`openssl rand -hex 32`
     export JWT_SECRET_KEY=$jwt
     export JWT_ACCESS_TOKEN_EXPIRE_MINUTES=
+    export GOOGLE_LOGIN_WEB_CLIENT_ID=
     export GOOGLE_LOGIN_IOS_CLIENT_ID=
     ```
 
