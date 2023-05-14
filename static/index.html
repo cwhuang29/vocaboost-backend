@@ -24,25 +24,33 @@
       display: flex;
       flex-direction: column;
     }
-
     .slide-icon {
       background-color: #49505726;
       border-radius: 18px;
       background-size: 75% 75%;
       filter: brightness(0) saturate(100%);
     }
-
     .section {
-      margin-top: 36px;
+      margin-top: 38px;
     }
-
+    .section-title {
+      margin-right: 24px;
+    }
+    .section-title-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: flex-end
+    }
+    .install-label {
+      margin-bottom: 15px;
+    }
     footer {
       margin-top: auto;
       width: 100%;
       padding: 10px 45px 8px 45px;
       background-color: #EEEEEE;
     }
-
   </style>
   <script>
     const {['log']: c} = console;
@@ -66,18 +74,17 @@
       <!-- </ul> -->
     </div>
   </nav>
-
-  <div style=" display: flex; justify-content: space-between;">
-    <div style="width: 60%; margin: 30px 0 0 45px">
+  <div style=" display: flex; flex-wrap: wrap-reverse; justify-content: space-between; margin-top: 20px;">
+    <div style="margin: 16px 50px; max-width: 870px;">
       <h1 class="display-4">Welcome to Vocaboost</h1>
       <p class="lead">VocabularyBoost (VocaBoost) helps you improve GRE vocabulary in an effective way.</p>
       <div class="section">
-        <div style="display: flex; justify-content: flex-start; align-items: flex-end;">
-          <h1 class="display-6">VocaBoost App</h1>
-          <p style="margin: 0 8px 13px 18px;">Install at&nbsp;&nbsp;<a
-              href="https://apps.apple.com/app/vocabboost/id6447704480"
-              class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">App
-              Store</a></p>
+        <div class="section-title-group">
+          <h1 class="display-6 section-title">VocaBoost App</h1>
+          <p class="install-label">Install at&nbsp;&nbsp;<a
+            href="https://apps.apple.com/app/vocabboost/id6447704480"
+            class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">App
+            Store</a></p>
         </div>
         <p>VocaBoost is designed to help non-native English speakers improve their language skills and prepare for the
           GRE exam. With over 1500 of the most commonly used GRE vocabulary and phrases, VocaBoost is an essential tool
@@ -86,9 +93,9 @@
           in your preferred language.</p>
       </div>
       <div class="section">
-        <div style="display: flex; justify-content: flex-start; align-items: flex-end;">
-          <h1 class="display-6">VocaBoost Extension</h1>
-          <p style="margin: 0 8px 13px 18px;">Install at&nbsp;&nbsp;<a
+        <div class="section-title-group">
+          <h1 class="display-6 section-title">VocaBoost Extension</h1>
+          <p class="install-label">Install at&nbsp;&nbsp;<a
               href="https://chrome.google.com/webstore/detail/vocaboost-gre-vocabulary/gfkmbmplhjdoejicgmaldndkcnnpplho"
               class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Chrome Web
               Store</a></p>
@@ -107,7 +114,7 @@
           is totally optional.</p>
       </div>
     </div>
-    <div style="width: 40%;" id="carouselIndicators" class="carousel slide" data-bs-ride="carousel">
+    <div style="width: 390px; margin: 0 auto;" id="carouselIndicators" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-indicators">
         <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="0" class="active"
           aria-current="true" aria-label="Slide 1"></button>
