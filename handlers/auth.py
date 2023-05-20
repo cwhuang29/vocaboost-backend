@@ -11,7 +11,7 @@ from handlers.oauth_validator import verifyOAuthToken
 from structs.models.user import UserORM
 from structs.requests.auth import ReqLogin
 from structs.schemas.auth import LoginOut, TokenData
-from utils.enum import ClientSourceType
+from utils.enum import ClientSourceType, DevicePlatformType
 from databases.auth import createLoginRecord, createLogoutRecord
 from utils.exception import HTTP_CREDENTIALS_EXCEPTION, HTTP_PAYLOAD_MALFORMED_EXCEPTION, HTTP_SERVER_EXCEPTION
 from utils.type import DetailedUserORMType, DetailedUserType
@@ -38,9 +38,9 @@ def verifyLogin(reqLogin: ReqLogin, user, oauthToken) -> None:
         raise HTTP_CREDENTIALS_EXCEPTION
 
 
-def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType) -> DetailedUserType:
+def getLoginUser(reqLogin: ReqLogin, source: ClientSourceType, platform: DevicePlatformType) -> DetailedUserType:
     try:
-        oauthToken = getOAuthToken(reqLogin.loginMethod, source, reqLogin.idToken)
+        oauthToken = getOAuthToken(reqLogin.idToken, reqLogin.loginMethod, source, platform)
         assert oauthToken is not None
         accountId = getUserIdentifierFromIDToken(reqLogin.loginMethod, oauthToken)
         user = parseLoginPayload(reqLogin, accountId)
@@ -81,9 +81,9 @@ async def loadUserFromDB(user: DetailedUserType, tokenData: TokenData | None, db
     return dbUser, dbDetailedUser, isNewUser
 
 
-async def handleLogin(reqLogin: ReqLogin, tokenData: TokenData | None, source: ClientSourceType, db: Session):
+async def handleLogin(reqLogin: ReqLogin, tokenData: TokenData | None, source: ClientSourceType, platform: DevicePlatformType, db: Session):
     reqLogin.timeStamp = datetime.utcnow()
-    user = getLoginUser(reqLogin, source)
+    user = getLoginUser(reqLogin, source, platform)
     dbUser, dbDetailedUser, isNewUser = await loadUserFromDB(user, tokenData, db)
     await createLoginRecord(db, dbUser.uuid, source)
     token = createAccessToken(dbUser.uuid, dbUser.method, dbUser.firstName, dbUser.lastName, dbDetailedUser.email)

@@ -7,7 +7,7 @@ from starlette.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from routers import auth, user, word
-from utils.constant import CORS, FAVICON_PATH, HEADER_SOURCE
+from utils.constant import CORS, FAVICON_PATH, HEADER_SOURCE, HEADER_SOURCE_VALUE
 from utils.logger import showRequestStat
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ app.add_middleware(
 async def add_process_time_header(req: Request, call_next):
     start_time = time.time()
     resp = await call_next(req)
-    resp.headers[HEADER_SOURCE['NAME']] = HEADER_SOURCE['VALUE']
+    resp.headers[HEADER_SOURCE] = HEADER_SOURCE_VALUE
     showRequestStat(req, resp, time.time() - start_time)
     return resp
 

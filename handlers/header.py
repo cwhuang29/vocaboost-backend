@@ -3,7 +3,7 @@ import logging
 
 from fastapi import HTTPException, Header
 
-from utils.enum import ClientSourceHeaderType, ClientSourceType
+from utils.enum import ClientSourceHeaderType, ClientSourceType, DevicePlatformType
 from utils.message import getNoSourceHeaderMsg
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,15 @@ def getSourceHeader(x_vh_source: Annotated[str, Header()]) -> ClientSourceType:
             source = ClientSourceType.MOBILE
         if s == ClientSourceHeaderType.EXTENSION:
             source = ClientSourceType.EXTENSION
+    except Exception:
+        pass
+    return source
+
+
+def getDevicePlatformHeader(x_vh_platform: Annotated[str, Header()]) -> DevicePlatformType:
+    source = DevicePlatformType.UNKNOWN
+    try:
+        source = DevicePlatformType(x_vh_platform)
     except Exception:
         pass
     return source

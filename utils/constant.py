@@ -14,7 +14,8 @@ CORS = {
     'HEADERS': ['Accept', 'Authorization', 'Content-Type', 'Content-Length', 'Accept-Encoding', 'X-CSRF-Token', 'X-VH-Source'],
 }
 
-HEADER_SOURCE = {
-    'NAME': 'X-VH-Source',
-    'VALUE': 'backend',
-}
+HEADER_SOURCE = 'X-VH-Source'
+
+HEADER_SOURCE_VALUE = 'backend'
+
+HEADER_PLATFORM = 'X-VH-Platform'

@@ -31,6 +31,12 @@ class ClientSourceHeaderType(str, Enum):
     UNKNOWN = 'unknown'
 
 
+class DevicePlatformType(str, Enum):
+    IOS = 'ios'
+    ANDROID = 'android'
+    UNKNOWN = 'unknown'
+
+
 class RouterGroupType(str, Enum):
     AUTH = 'auth'
     USER = 'users'
