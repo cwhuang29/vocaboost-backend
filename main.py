@@ -2,13 +2,16 @@ import time
 import logging
 
 from fastapi import FastAPI, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
+from starlette.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from routers import auth, user, word
 from utils.constant import CORS, FAVICON_PATH, HEADER_SOURCE, HEADER_SOURCE_VALUE
-from utils.logger import showRequestStat
+from utils.logger import showInvalidRequest, showRequestStat
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +29,15 @@ app.add_middleware(
     allow_methods=CORS['METHODS'],
     allow_headers=CORS['HEADERS'],
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(req: Request, exc: RequestValidationError):
+    showInvalidRequest(req, exc)
+    return JSONResponse(
+        content=jsonable_encoder({"detail": str(exc)}),  # Alternative: exc.errors()
+        status_code=400
+    )
 
 
 @app.middleware('http')
