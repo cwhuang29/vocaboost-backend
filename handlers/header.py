@@ -35,5 +35,6 @@ def getDevicePlatformHeader(x_vh_platform: Annotated[str, Header()]) -> DevicePl
     try:
         source = DevicePlatformType(x_vh_platform)
     except Exception:
-        pass
+        # We only support iOS at first. So if this header is missing, then the user probably did not update
+        source = DevicePlatformType.IOS
     return source
