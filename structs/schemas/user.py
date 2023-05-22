@@ -10,7 +10,7 @@ class User(BaseModel):
     uuid: Optional[UUID4]
     loginMethod: LoginMethodType
     firstName: constr(max_length=100)
-    lastName: constr(max_length=100)
+    lastName: Optional[constr(max_length=100)]
     createdAt: Optional[datetime]
 
     class Config:
@@ -46,7 +46,7 @@ class UserOut(BaseModel):
     uuid: Optional[UUID4]
     loginMethod: LoginMethodType
     firstName: constr(max_length=100)
-    lastName: constr(max_length=100)
+    lastName: Optional[constr(max_length=100)]
     createdAt: datetime
 
     class Config:

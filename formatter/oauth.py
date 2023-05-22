@@ -8,7 +8,7 @@ def formatGoogleOAuthToken(idInfo) -> GoogleOAuthToken:
         sub=idInfo['sub'],
         email=idInfo['email'],
         firstName=idInfo['given_name'],
-        lastName=idInfo['family_name'],
+        lastName=idInfo.get('family_name', ''),
         avatar=idInfo['picture'],
         exp=idInfo['exp'],
     )

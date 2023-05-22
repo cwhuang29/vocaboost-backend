@@ -9,7 +9,7 @@ from utils.enum import LoginMethodType
 class ReqLoginDetail(BaseModel):
     email: str
     firstName: str
-    lastName: str
+    lastName: Optional[str]
     scopes: str
     avatar: str
 
