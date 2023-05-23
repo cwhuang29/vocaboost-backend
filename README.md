@@ -10,7 +10,7 @@ Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id644
 
 ## System Architecture
 
-![System Architecture](demo/vocaboost-system-architecture.jpg)
+![System Architecture](demo/vocaboost-system-architecture.png)
 
 ## Commands
 
