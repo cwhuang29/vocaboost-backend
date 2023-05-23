@@ -27,7 +27,7 @@ def formatDisplayAzureUserFromORM(dbUser: UserORM, dbDetailedUser: AzureUserORM)
     )
 
 
-def formatDisplayUserFromORM(dbUser: UserORM, dbDetailedUser) -> DetailedUserOutType:
+def formatDisplayedUserFromORM(dbUser: UserORM, dbDetailedUser) -> DetailedUserOutType:
     user = None
     if LoginMethodType(dbUser.method) == LoginMethodType.GOOGLE:
         user = formatDisplayGoogleUserFromORM(dbUser, dbDetailedUser)

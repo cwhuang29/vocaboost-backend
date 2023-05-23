@@ -9,9 +9,13 @@ from utils.enum import LoginMethodType
 class User(BaseModel):
     uuid: Optional[UUID4]
     loginMethod: LoginMethodType
+    accountId: str  # Uniquely identify an 3rd party account
     firstName: constr(max_length=100)
     lastName: Optional[constr(max_length=100)]
     createdAt: Optional[datetime]
+
+    def __repr__(self):
+        return f'{self.__module__}-{type(self).__qualname__}-{self.loginMethod}-{self.accountId}'
 
     class Config:
         orm_mode = True
@@ -20,7 +24,6 @@ class User(BaseModel):
 class GoogleUser(User):
     loginMethod = LoginMethodType.GOOGLE
     userId: Optional[conint(ge=0)]
-    accountId: str  # Uniquely identify a google account
     email: EmailStr
     scopes: constr(max_length=1000)
     avatar: constr(max_length=600)
@@ -32,7 +35,6 @@ class GoogleUser(User):
 class AzureUser(User):
     loginMethod = LoginMethodType.AZURE
     userId: Optional[conint(ge=0)]
-    accountId: str  # Uniquely identify a microsoft account
     email: EmailStr
     scopes: constr(max_length=1000)
     avatar: str  # Base64 encoding string
@@ -43,11 +45,14 @@ class AzureUser(User):
 
 # Contain only values that should be displayed on the client
 class UserOut(BaseModel):
-    uuid: Optional[UUID4]
+    uuid: UUID4
     loginMethod: LoginMethodType
     firstName: constr(max_length=100)
     lastName: Optional[constr(max_length=100)]
     createdAt: datetime
+
+    def __repr__(self):
+        return f'{self.__module__}-{type(self).__qualname__}-{self.loginMethod}-{self.uuid}'
 
     class Config:
         orm_mode = True

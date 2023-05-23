@@ -19,3 +19,6 @@ class ReqLogin(BaseModel):
     idToken: str
     detail: ReqLoginDetail
     timeStamp: Optional[datetime]
+
+    def __repr__(self):
+        return f'{self.__module__}-{type(self).__qualname__}-{self.loginMethod}-{self.detail.email}'

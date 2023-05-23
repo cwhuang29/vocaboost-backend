@@ -19,3 +19,10 @@ HEADER_SOURCE = 'X-VH-Source'
 HEADER_SOURCE_VALUE = 'backend'
 
 HEADER_PLATFORM = 'X-VH-Platform'
+
+CACHE_TTL = {
+    'AUTH': 60 * 60 * 24,  # 1 day
+    'USER': 60 * 60 * 24,
+    'SETTING': 60 * 60,
+    'WORD': 60 * 60,
+}

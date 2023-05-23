@@ -12,6 +12,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
 Base = declarative_base()
 
 
+# An independent database session/connection (SessionLocal) per request, use the same session through all the request then close it after the request is finished
 def getDB():
     db = SessionLocal()
     try:

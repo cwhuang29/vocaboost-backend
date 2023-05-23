@@ -13,6 +13,9 @@ class TokenData(BaseModel):
     lastName: str | None = None
     email: str | None = None
 
+    def __repr__(self):
+        return f'{self.__module__}-{type(self).__qualname__}-{self.uuid}'
+
 
 class LoginOut(BaseModel):
     token: Token

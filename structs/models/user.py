@@ -15,6 +15,9 @@ class UserORM(Base):
     createdAt = Column('created_at', DateTime, default=func.now())
     updatedAt = Column('updated_at', DateTime)
 
+    def __repr__(self):
+        return f'{self.__module__}-{type(self).__qualname__}-{self.id}'
+
 
 class GoogleUserORM(Base):
     __tablename__ = 'users_google'

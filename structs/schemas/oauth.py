@@ -1,7 +1,12 @@
 from pydantic import BaseModel
 
 
-class GoogleOAuthToken(BaseModel):
+class OAuthToken(BaseModel):
+    def __repr__(self):
+        return f'{self.__module__}-{type(self).__qualname__}-{self.email}-{self.sub}'
+
+
+class GoogleOAuthToken(OAuthToken):
     iss: str = None  # Should equal to accounts.google.com or https://accounts.google.com
     aud: str = None  # App's client ID
     sub: str = None  # User account ID
@@ -15,7 +20,7 @@ class GoogleOAuthToken(BaseModel):
         orm_mode = True
 
 
-class AzureOAuthToken(BaseModel):
+class AzureOAuthToken(OAuthToken):
     ver: str = None
     iss: str = None
     sub: str = None  # Uniquely identify an user
