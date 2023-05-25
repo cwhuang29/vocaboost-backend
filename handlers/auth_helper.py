@@ -35,7 +35,12 @@ cacheStore = CacheStore(makeCacgeStoreConfig())
 oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
-def createAccessToken(uuid: str, method: int, firstName: str, lastName: str, email: str | None = '', expiresDelta: timedelta | None = None) -> Token:
+def createAccessToken(dbUser: UserORM, dbDetailedUser: DetailedUserORMType, expiresDelta: timedelta | None = None) -> Token:
+    uuid = dbUser.uuid
+    method = dbUser.method
+    firstName = dbUser.firstName
+    lastName = dbUser.lastName
+    email = dbDetailedUser.email
     payload = {
         'sub': uuid,
         'method': method,

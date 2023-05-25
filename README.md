@@ -73,6 +73,7 @@ Get JWT secret key by `openssl rand -hex 32`, output looks like `9e283bd0313d49c
     curl -X 'POST' \
       'http://localhost:8000/v1/login' \
       -H 'X-VH-Source: mobile' \
+      -H 'X-VH-Platform: ios' \
       -H 'accept: application/json' \
       -H 'Content-Type: application/json' \
       -d '{
@@ -82,7 +83,6 @@ Get JWT secret key by `openssl rand -hex 32`, output looks like `9e283bd0313d49c
         "firstName": "Jack",
         "lastName": "ABC",
         "scopes": "[https://www.googleapis.com/auth/userinfo.email]",
-        "serverAuthCode": "",
         "avatar": "https://wlh3.googleusercontent.com/a/AH8GmiVYK36"
       },
       "timeStamp": "2023-04-03T01:34:47.594Z"
@@ -100,11 +100,12 @@ Get JWT secret key by `openssl rand -hex 32`, output looks like `9e283bd0313d49c
 
     ```bash
     # Logout
-    jwt=<accessToken from response>
+    jwt=<accessToken from login response>
     curl -X 'POST' \
       'http://localhost:8000/v1/logout' \
       -H 'accept: application/json' \
-    	-H 'X-VH-Source: mobile' \
+      -H 'X-VH-Source: mobile' \
+      -H 'X-VH-Platform: ios' \
       -H "Authorization: Bearer ${jwt}"
     # Response
     # {"result":"success"}
@@ -117,7 +118,8 @@ Get JWT secret key by `openssl rand -hex 32`, output looks like `9e283bd0313d49c
     curl -X 'GET' \
       'http://localhost:8000/v1/users/me' \
       -H 'accept: application/json' \
-    	-H 'X-VH-Source: mobile' \
+      -H 'X-VH-Source: mobile' \
+      -H 'X-VH-Platform: ios' \
       -H "Authorization: Bearer ${jwt}"
     # Response (succeed)
     # {
