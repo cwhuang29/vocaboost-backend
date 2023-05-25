@@ -14,9 +14,11 @@ async def createAuthHistory(db: Session, uuid: UUID4, source: ClientSourceType, 
         db.commit()
 
 
+# Note: this will be moved to a separate analytics server
 async def createLoginRecord(db: Session, uuid: UUID4, source: ClientSourceType):
     await createAuthHistory(db, uuid, source, AuthHistoryType.SIGNEDIN)
 
 
+# Note: this will be moved to a separate analytics server
 async def createLogoutRecord(db: Session, uuid: UUID4, source: ClientSourceType):
     await createAuthHistory(db, uuid, source, AuthHistoryType.SIGNEDOUT)

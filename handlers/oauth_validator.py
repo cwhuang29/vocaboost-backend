@@ -9,6 +9,7 @@ from utils.type import OAuthTokenType
 
 def verifyOAuthGoogleToken(oauthToken: GoogleOAuthToken):
     err = ValueError(ERROR_MSG.OAUTH_TOKEN_INVALID)
+
     if not oauthToken.sub:
         raise err
     # No need to verify since we have passed it to google oauth verification api
@@ -22,6 +23,7 @@ def verifyOAuthGoogleToken(oauthToken: GoogleOAuthToken):
 
 def verifyOAuthAzureToken(oauthToken: AzureOAuthToken):
     err = ValueError(ERROR_MSG.OAUTH_TOKEN_INVALID)
+
     if not oauthToken.iss.startswith(OAUTH_AZURE_ISS):
         raise err
     if oauthToken.ver != OAUTH_AZURE_VER:

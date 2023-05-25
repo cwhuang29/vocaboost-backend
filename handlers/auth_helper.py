@@ -30,9 +30,9 @@ from utils.type import DetailedUserORMType, DetailedUserType
 
 logger = logging.getLogger(__name__)
 
-oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')
-
 cacheStore = CacheStore(makeCacgeStoreConfig())
+
+oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
 def createAccessToken(uuid: str, method: int, firstName: str, lastName: str, email: str | None = '', expiresDelta: timedelta | None = None) -> Token:
@@ -98,7 +98,6 @@ async def getUserAndDetailedUserByTokenData(db: Session, tokenData: TokenData) -
     return dbUser, dbDetailedUser
 
 
-@cacheable(cacheStore=cacheStore, ttl=CACHE_TTL['AUTH'])
 async def getUserAndDetailedUserByUser(db: Session, user: DetailedUserType) -> tuple[UserORM, DetailedUserORMType] | tuple[None, None]:
     dbDetailedUser = await getDetailedUserByUser(db, user)
     if dbDetailedUser is None:

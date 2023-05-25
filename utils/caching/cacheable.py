@@ -29,7 +29,8 @@ def cacheable(_func=None, *, cacheStore: CacheStore, cacheKey: str | Callable[..
                 cachedValue = await cacheStore.get(key)
                 if cachedValue:
                     logger.warning(f'[cacheable] cache hit. key: {key}')
-                    return pickle.loads(cachedValue)
+                    value = pickle.loads(cachedValue)
+                    return value
             except Exception as err:
                 logger.exception(f'[cacheable] read cache error. key: {key}. error: {err}')
                 cacheStoreIsLive = False

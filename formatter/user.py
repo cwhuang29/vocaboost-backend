@@ -1,3 +1,4 @@
+from datetime import datetime
 from structs.models.user import AzureUserORM, GoogleUserORM, UserORM
 from structs.requests.auth import ReqLogin
 from structs.schemas.user import AzureUser, AzureUserOut, GoogleUser, GoogleUserOut, User
@@ -41,7 +42,7 @@ def formatUserFromReq(reqLogin: ReqLogin) -> User:
         loginMethod=reqLogin.loginMethod,
         firstName=reqLogin.detail.firstName,
         lastName=reqLogin.detail.lastName,
-        createdAt=reqLogin.timeStamp
+        createdAt=reqLogin.timeStamp or datetime.utcnow()
     )
 
 
@@ -54,7 +55,7 @@ def formatGoogleUserFromReq(reqLogin: ReqLogin, accountId: str) -> GoogleUser:
         email=reqLogin.detail.email,
         scopes=reqLogin.detail.scopes,
         avatar=reqLogin.detail.avatar,
-        createdAt=reqLogin.timeStamp,
+        createdAt=reqLogin.timeStamp or datetime.utcnow(),
     )
 
 
@@ -67,5 +68,5 @@ def formatAzureUserFromReq(reqLogin: ReqLogin, accountId: str) -> AzureUser:
         email=reqLogin.detail.email,
         scopes=reqLogin.detail.scopes,
         avatar=reqLogin.detail.avatar,
-        createdAt=reqLogin.timeStamp,
+        createdAt=reqLogin.timeStamp or datetime.utcnow(),
     )
