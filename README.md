@@ -6,7 +6,7 @@ View VocaBoost official website on [here](https://www.vocabularyboost.com/).
 
 Install VocaBoost extension on [Chrome Web Store](https://chrome.google.com/webstore/detail/gre-vocabulary-highlighte/gfkmbmplhjdoejicgmaldndkcnnpplho).
 
-Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id6447704480).
+Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id6447704480) or [Google Play Store](https://play.google.com/store/apps/details?id=vocaboost.com).
 
 ## System Architecture
 
@@ -25,8 +25,9 @@ Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id644
     pip3 install virtualenv
     python3 -m virtualenv venv
     source venv/bin/activate
-    pip install fastapi "uvicorn[standard]" SQLAlchemy pymysql email-validator "python-jose[cryptography]" websockets pyjwt
+    pip install fastapi "uvicorn[standard]" SQLAlchemy pymysql email-validator "python-jose[cryptography]" websockets pyjwt redis
     pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib # Google OAuth
+    pip install azure-ad-verify-token # Azure OAuth
     ```
 
 2. Check `config.py` and setup all necessary env variables
@@ -38,10 +39,18 @@ Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id644
     export MYSQL_PASSWORD=
 
     jwt=`openssl rand -hex 32`
+    export JWT_ALGO=HS256
     export JWT_SECRET_KEY=$jwt
     export JWT_ACCESS_TOKEN_EXPIRE_MINUTES=
+
     export GOOGLE_LOGIN_WEB_CLIENT_ID=
     export GOOGLE_LOGIN_IOS_CLIENT_ID=
+    export GOOGLE_LOGIN_ANDROID_CLIENT_ID=
+
+    export AZURE_LOGIN_CLIENT_ID=
+    export AZURE_ISSUER=
+    export REDIS_HOST=
+    export REDIS_PASSWORD=
     ```
 
 ## Structure
