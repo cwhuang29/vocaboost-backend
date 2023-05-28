@@ -26,7 +26,7 @@ def getUserIdentifierFromIDToken(loginMethod: LoginMethodType, oauthToken: OAuth
     return None
 
 
-def decodeGoogleIDToken(idToken, source: ClientSourceType, platform: DevicePlatformType) -> GoogleOAuthToken:
+def decodeGoogleIDToken(idToken, source: ClientSourceType, platform: DevicePlatformType = DevicePlatformType.UNKNOWN) -> GoogleOAuthToken:
     try:
         audience = getGoogleOAuthClientID(source, platform)
         decoded = id_token.verify_oauth2_token(idToken, requests.Request(), audience)
@@ -55,7 +55,7 @@ def getOAuthToken(idToken: str, loginMethod: LoginMethodType, source: ClientSour
     oauthToken = None
     if source == ClientSourceType.EXTENSION:
         if loginMethod == LoginMethodType.GOOGLE:
-            oauthToken = decodeGoogleIDToken(idToken, source, platform)
+            oauthToken = decodeGoogleIDToken(idToken, source)
         if loginMethod == LoginMethodType.AZURE:
             oauthToken = decodeAzureIDToken(idToken)
     else:
