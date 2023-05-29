@@ -1,6 +1,6 @@
 # VocaBoost - Backend
 
-VocabularyBoost (VocaBoost) helps you improve GRE vocabulary in an effective way.
+VocabularyBoost (VocaBoost) helps you improve GRE and TOEFL vocabulary in an effective way.
 
 View VocaBoost official website on [here](https://www.vocabularyboost.com/).
 
@@ -38,6 +38,9 @@ Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id644
     export MYSQL_USER=vocaboost
     export MYSQL_PASSWORD=
 
+    export REDIS_HOST=127.0.0.1:6379
+    export REDIS_PASSWORD=
+
     jwt=`openssl rand -hex 32`
     export JWT_ALGO=HS256
     export JWT_SECRET_KEY=$jwt
@@ -49,8 +52,6 @@ Install VocaBoost app on [App Store](https://apps.apple.com/app/vocabboost/id644
 
     export AZURE_LOGIN_CLIENT_ID=
     export AZURE_ISSUER=
-    export REDIS_HOST=
-    export REDIS_PASSWORD=
     ```
 
 ## Structure
