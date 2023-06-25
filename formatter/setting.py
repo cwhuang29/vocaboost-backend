@@ -9,13 +9,13 @@ from utils.setting import DEFAULT_SETTING
 def formatDefaultSetting(userId: int) -> Setting:
     return Setting(
         userId=userId,
-        highlightColor=DEFAULT_SETTING['highlightColor'],
-        language=DEFAULT_SETTING['language'],
-        fontSize=DEFAULT_SETTING['fontSize'],
-        showDetail=DEFAULT_SETTING['showDetail'],
-        collectedWords=DEFAULT_SETTING['collectedWords'],
-        suspendedPages=DEFAULT_SETTING['suspendedPages'],
-        updatedAt=DEFAULT_SETTING['updatedAt'],
+        highlightColor=DEFAULT_SETTING.highlightColor,
+        language=DEFAULT_SETTING.language,
+        fontSize=DEFAULT_SETTING.fontSize,
+        showDetail=DEFAULT_SETTING.showDetail,
+        collectedWords=DEFAULT_SETTING.collectedWords,
+        suspendedPages=DEFAULT_SETTING.suspendedPages,
+        updatedAt=DEFAULT_SETTING.updatedAt,
     )
 
 
