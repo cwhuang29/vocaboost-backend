@@ -11,12 +11,8 @@ class User:
     firstName: str
     lastName: str
     method: int
-    createdAt: datetime
+    createdAt: Optional[datetime]
     updatedAt: Optional[datetime]
-
-    @strawberry.field
-    def fullName(self) -> str:
-        return f"{self.firstName} {self.lastName}"
 
 
 @strawberry.type(description='GoogleUser class')
@@ -38,3 +34,18 @@ class AzureUser:
 
 
 DetailedUser = GoogleUser | AzureUser
+
+
+@strawberry.type(description='User displayed class')
+class UserOut:
+    uuid: str
+    loginMethod: int
+    firstName: str
+    lastName: Optional[str]
+    createdAt: Optional[datetime]
+    email: Optional[str]
+    avatar: Optional[str]
+
+    @strawberry.field
+    def fullName(self) -> str:
+        return f"{self.firstName} {self.lastName}"

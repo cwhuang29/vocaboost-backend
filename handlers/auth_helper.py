@@ -1,10 +1,7 @@
 from datetime import datetime, timedelta
 import logging
-from typing import Annotated
 import uuid
 
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -26,13 +23,12 @@ from utils.caching.helper import makeCacgeStoreConfig
 from utils.constant import CACHE_TTL
 from utils.enum import LoginMethodType
 from utils.exception import HTTP_CREDENTIALS_EXCEPTION, HTTP_PAYLOAD_MALFORMED_EXCEPTION, HTTP_SERVER_EXCEPTION
+from utils.message import ERROR_MSG
 from utils.type import DetailedUserORMType, DetailedUserType
 
 logger = logging.getLogger(__name__)
 
 cacheStore = CacheStore(makeCacgeStoreConfig())
-
-oauth2Scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
 def createAccessToken(dbUser: UserORM, dbDetailedUser: DetailedUserORMType, expiresDelta: timedelta | None = None) -> Token:
@@ -57,7 +53,7 @@ def createAccessToken(dbUser: UserORM, dbDetailedUser: DetailedUserORMType, expi
     return Token(accessToken=encodedJWT, tokenType='bearer')
 
 
-def decodeAccessToken(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData:
+def decodeAccessToken(token: str) -> TokenData:
     tokenData = None
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGO])
@@ -75,6 +71,15 @@ def decodeAccessToken(token: Annotated[str, Depends(oauth2Scheme)]) -> TokenData
         logger.exception(err)
         raise HTTP_CREDENTIALS_EXCEPTION
     return tokenData
+
+
+async def loadDbUserByToken(token: str, db: Session):
+    try:
+        tokenData = decodeAccessToken(token)
+        dbUser = await getUserByUUID(db, tokenData.uuid)
+    except Exception:
+        return None, ERROR_MSG.LOGIN_FIRST
+    return dbUser, None
 
 
 def parseLoginPayload(reqLogin: ReqLogin, accountId: str) -> DetailedUserType:

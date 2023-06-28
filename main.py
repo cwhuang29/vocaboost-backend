@@ -8,27 +8,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-import strawberry
-from strawberry.asgi import GraphQL
 
-from routers import auth, user, word
-from structs.graphql.query import Query
+
+from routers import auth, user, word, graphql
 from utils.constant import CORS, FAVICON_PATH, HEADER_SOURCE, HEADER_SOURCE_VALUE
 from utils.logger import showInvalidRequest, showRequestStat
 
 
 logger = logging.getLogger(__name__)
 
-schema = strawberry.Schema(query=Query)
-graphqlApp = GraphQL(schema)
-
 app = FastAPI(docs_url=None, redoc_url=None)
 
 app.include_router(prefix='/v1', router=auth.router)
 app.include_router(prefix='/v1', router=user.router)
 app.include_router(prefix='/v1', router=word.router)
-app.add_route("/graphql", graphqlApp)
-app.add_websocket_route("/graphql", graphqlApp)
+app.include_router(prefix='/graphql', router=graphql.router)
 
 app.add_middleware(
     CORSMiddleware,
