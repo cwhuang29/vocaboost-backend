@@ -5,7 +5,7 @@ import pickle
 from typing import Callable
 
 from utils.caching.cache_store import CacheStore
-from utils.caching.helper import makeCacgeStoreConfig, makeCacheKey
+from utils.caching.helper import makeCacheKey
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ DEFAULT_SHORT_TTL = 60 * 2  # For preventing cache penetration
 
 def cacheable(_func=None, *, cacheStore: CacheStore, cacheKey: str | Callable[..., str] = None, ttl: int = DEFAULT_SHORT_TTL):
     if _func is None:
-        cacheStore = CacheStore(makeCacgeStoreConfig())
+        # The decorator was called with arguments. Assign these arguments right now
         return functools.partial(cacheable, cacheStore=cacheStore, cacheKey=cacheKey, ttl=ttl)
 
     def wrapper(func):

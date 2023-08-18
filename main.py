@@ -6,9 +6,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from starlette.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-
+from starlette.responses import FileResponse
 
 from routers import auth, user, word, graphql
 from utils.constant import CORS, FAVICON_PATH, HEADER_SOURCE, HEADER_SOURCE_VALUE
